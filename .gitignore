@@ -1,0 +1,11 @@
+*.aux
+main.fdb_latexmk
+main.fls
+main.out
+main.log
+main.toc
+main.synctex.gz
+main.synctex(busy)
+.DS_Store
+pdflatex1181.fls
+pdflatex925.fls
