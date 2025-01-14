@@ -1,0 +1,112 @@
+\documentclass[oneside]{book}
+
+\include{preamble}
+\geometry{left=2.54cm}
+\geometry{right=2.54cm}
+\colorlet{chaptergrey}{black}
+
+\include{title}
+
+%\begin{comment}
+\usepackage{draftwatermark}
+
+\SetWatermarkText{Draft: \today}
+\SetWatermarkColor[gray]{0.5}
+\SetWatermarkFontSize{1cm}
+\SetWatermarkAngle{90}
+\SetWatermarkHorCenter{20cm}
+%\end{comment}
+
+\begin{document}
+
+\begin{center} 
+    \begin{minipage}{\textwidth}
+        \maketitle
+        \begin{center}
+        \begin{tabular}{c}
+            UNIVERSITY OF COLORADO BOULDER \\
+            \hline \\
+        \end{tabular}
+        \\
+        \includegraphics[scale=0.2]{Graphics/CU.png}
+        \end{center}
+    \end{minipage}
+\end{center}
+
+\vfill
+\rightline{\textbf{EDITION 1}}
+\frontmatter
+
+\begin{center}
+    \includegraphics[scale=1.5, width=\textwidth]{Graphics/latex.png}
+\end{center}
+
+\pagebreak
+
+\tableofcontents
+
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{4}
+
+\pagebreak
+
+\chapter*{Preface}
+\addcontentsline{toc}{chapter}{Preface}
+
+\input{Chapters/preface.tex}
+
+\mainmatter
+
+\begin{savequote}
+    
+\end{savequote}
+\chapter{Introduction to Advanced Algorithms}
+
+\input{Chapters/introalgs.tex}
+
+\chapter*{}
+\addcontentsline{toc}{chapter}{Algorithms as a Word Cloud}
+
+% FOR THE IMAGE
+\vspace*{\fill}
+\begin{center}
+    % INCLUDEGRAPHIC HERE
+\end{center}
+\vspace*{\fill}
+
+\appendix
+\appendixpage
+\noappendicestocpagenum
+\addappheadtotoc
+
+
+\chapter*{}
+\addcontentsline{toc}{chapter}{List of Theorems and Definitions}
+\markboth{LIST OF THEOREMS AND DEFINITIONS}{LIST OF THEOREMS AND DEFINITIONS}
+
+    \input{AutomaticThmsDefsIndex/listOfLabels.tex}
+    
+\begin{comment}
+
+    
+\pagebreak
+
+\appendix
+\appendixpage
+\noappendicestocpagenum
+\addappheadtotoc
+\begin{savequote}
+    
+\end{savequote}
+\chapter{} \label{appendix:}
+
+    \input{Chapters/}
+    
+
+
+\end{comment}
+
+\bibliographystyle{alpha}
+\bibliography{Chapters/references.bib}
+
+\end{document}
