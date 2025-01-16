@@ -1,0 +1,186 @@
+\section{Lecture 1: January 14, 2025}
+
+    \subsection{Introduction to Fine-Grained Complexity}
+    
+        We hope to precisely understand the complexity of several algorithmic problems beyond the coarse information given by standard complexity classes, like \(\com{P}\) and \(\com{NP}\). A central theme is proving lower bounds for the complexity of algorithms; this is a difficult task in general. We use reductions as an essential tool.
+        \\
+        \\
+        The high-level idea behind fine-grained complexity is to explain hardness, or the lack of algorithmic progress, on fundamental computational problems by giving reductions from well-studied problems. Recall the \(\com{P}\) v. \(\com{NP}\) problem. Loosely, problems in \(\com{P}\) are ``easy,'' to solve, and problems in \(\com{NP}\) are ``easy'' to verify positive answers to. The hardest problems in \(\com{NP}\), the \(\com{NP}\)-complete problems do not admit polynomial-time algorithms unless \(\com{P}=\com{NP}\). To show that a problem is \(\com{NP}\)-complete, we show that it is in \(\com{NP}\), and exhibit a polynomial-time reduction from a known \(\com{NP}\)-complete problem. 
+        \\
+        \\
+        The theory behind \(\com{NP}\)-completeness is robust and quite nice. But, we'd like finer results. Knowing whether a problem is in \(\com{P}\) or not doesn't really narrow down how efficiently we can solve it in practice. Even quadratic-time algorithms may be inefficient in production.
+        \\
+        \\
+        These ideas motivate fine-grained complexity. Here, we start by taking a well-studied problem, say \(L_1\), and making a precise conjecture about the running time of optimal algorithms for \(L_1\). Then, we give an efficient reduction from \(L_1\) to a problem \(L_2\), for which we are showing hardness. We start by providing some hypotheses corresponding to certain problems, and later, we'll show fairly precise running time bounds for problems in \(\com{P}\).
+        \begin{example}
+            Under certain assumptions, there is no \(O(n^{2-\epsilon})\)-time algorithm for the \prob{Edit Distance} problem. This matches the \(O(n^2)\) dynamic programming algorithm.
+        \end{example}
+        \pagebreak
+        \begin{compprob}[\(k\)-\textsc{SAT}] \label{prob:ksat}
+            \vphantom
+            \\
+            \begin{itemize}
+                \item Given a CNF formula \(\varphi\) with \(k\) literals in each clause,
+                \item Decide: Does there exist a satisfying assignment?
+            \end{itemize}
+        \end{compprob}
+        \begin{hypothesis}{\Stop\,\,Exponential Time Hypothesis (ETH)}{ETH}
+            The \(3\)-\prob{SAT} problem takes \(2^{\Omega(n)}\) time.
+        \end{hypothesis}
+        \begin{remark*}
+            Note that \(\com{P}\neq\com{NP}\) asserts that \(3\)-\prob{SAT} has no polynomial-time algorithm, whereas ETH asserts that \(3\)-\prob{SAT} has no subexponential-time algorithm. ETH implies \(\com{P}\neq\com{NP}\).
+        \end{remark*}
+        \begin{hypothesis}{\Stop\,\,Strong Exponential Time Hypothesis (SETH)}{SETH}
+            For every \(\epsilon>0\), there exists \(k\in\mathbb{Z}^+\) such that there is no \(O\left(2^{(1-\epsilon)n}\right)=O((2-\epsilon)^n)\)-time algorithm for \(k\)-\prob{SAT}.
+        \end{hypothesis}
+        \begin{remark*}
+            SETH, at a high level, claims that \(2^n\)-time is essentially optimal for \(k\)-\prob{SAT} for large \(k\).
+        \end{remark*}
+        \begin{compprob}[\(k\)-\textsc{Sum}] \label{prob:ksum}
+            \vphantom
+            \\
+            \begin{itemize}
+                \item Given arrays \(A_1,\ldots,A_k\) each with \(n\) integers in \([-n^c,n^c]\),
+                \item Decide: Does there exist \(a_1\in A_1,\ldots, a_k\in A_k\) such that \(a_1+\cdots+a_k=0\)?
+            \end{itemize}
+            Some variants include assuming that \(A_1=\cdots=A_k\), or wanting to find \(a_1\in A_1,\ldots, a_k\in A_k\) where \(a_1+\cdots+a_{k-1}=a_k\).
+        \end{compprob}
+        \vphantom
+        \\
+        \\
+        Naively, we can solve \(k\)-\textsc{Sum} by trying all possible choices \(a_i\) and checking the sum. This can be done in \(O(n^k)\) time. We can do better. For now, let \(k=3\). We start by computing all possible sums \(a_1+a_2\). Then, define \(S=\{a_1+a_2:a_1\in A_1,a_2\in A_2\}\). Sort \(A_3\). For each \(s\in S\), search in \(A_3\) for \(-s\). If \(-s\) is found, there exists a solution. Otherwise, there is no solution. This provides an \(O(n^2\log n)\) algorithm; computing the sums takes \(O(n^2)\) time, sorting takes \(O(n\log n)\) time, and the search procedure takes \(O(n^2\log n)\) time. 
+        \begin{hypothesis}{\Stop\,\,No \(O(n^{2-\epsilon})\)-Time Algorithm for \(3\)-\textsc{Sum}}{nobetterthanquadratictime3sum}
+            For every \(\epsilon>0\), there is no \(O\left(n^{2-\epsilon}\right)\)-time algorithm for \(3\)-\textsc{Sum}.
+        \end{hypothesis}
+        
+
+\pagebreak
+
+\section{Lecture 2: January 16, 2025}
+
+    \subsection{Fine-Grained Complexity II}
+
+        Now, we introduce a new problem. 
+        \begin{compprob}[\textsc{All Pairs Shortest Path (APSP)}] \label{prob:apsp}
+            \vphantom
+            \\
+            \begin{itemize}
+                \item Given a weighted graph \(G=(V,E,w)\) on \(n\) vertices,
+                \item Find: The lengths of the shortest paths \(d(v_i,v_j)\) between every \(v_i,v_j\in V\).
+            \end{itemize}
+        \end{compprob}
+        \vphantom
+        \\
+        \\
+        One way to solve \textsc{APSP} is to run Dijkstra's algorithm on each vertex. Recall that Dijkstra's algorithm finds a single-source shortest path tree. We could also similarly use the Floyd-Warshall dynamic programming algorithm.
+        \begin{hypothesis}{\Stop\,\,No \(O(n^{3-\epsilon})\)-Time Algorithm for \textsc{APSP}}{nobetterthancubictimeapsp}
+            For every \(\epsilon>0\), there exists no \(O(n^{3-\epsilon})\)-time algorithm for \textsc{APSP}.
+        \end{hypothesis}
+        \vphantom
+        \\
+        \\
+        We now introduce the Floyd-Warshall dynamic programming algorithm in detail. Let \(D_k[i,j]\) store the length of the shortest path from \(v_i\) to \(v_j\), with the restriction that the path only passes through \(v_1,\ldots,v_k\).
+        \begin{example}
+            To illustrate our notion, consider the below figure.
+            \begin{center}
+            \begin{tikzpicture}[shorten >=1pt,->, vertex/.style = {draw, circle}]
+                    % \node[vertex] (G_1) at (-1,-1) {\(1\)};
+                    % \node[vertex] (G_2) at (0,0)   {\(2\)};
+                    % \node[vertex] (G_3) at (1,-1)  {\(3\)};
+                    % \draw (G_1) -- (G_2) -- (G_3) -- cycle;
+            \end{tikzpicture}
+            \end{center}
+        \adit{Insert Huck's example, see lecture notes.}
+        \end{example}
+        \vphantom
+        \\
+        \\
+        The idea is to build \(D_k\) from \(D_{k-1}\) comes from noting that either
+        \begin{enumerate}
+            \item the shortest path from \(v_i\) to \(v_j\) only using \(v_1,\ldots,v_k\) uses \(v_k\), or 
+            \item it does not.
+        \end{enumerate}
+        \adit{Insert figure here; see lecture notes.}
+        From this basic idea, we get a simple algorithm.
+        \begin{algorithm}[H] 
+            \begin{algorithmic}[1]
+                \Require \(G=(V,E,w)\).
+                \Procedure{Floyd\_Warshall}{$E$} 
+                    \State \(D_0\gets\begin{cases}
+                        0 & i=j \\
+                        w_{i,j} & i\neq j, (v_i,v_j)\in E \\
+                        \infty & (v_i,v_j)\nin E
+                    \end{cases}\)
+                    \For{\(k\in\{1,\ldots,n\}\)}
+                        \For{\(i\in\{1,\ldots,n\}\)}
+                            \For{\(j\in\{1,\ldots,n\}\)}
+                                \State \(D_{k}[i,j]=\min\{D_{k-1}[i,k]+D_{k-1}[k,j], D_{k-1}[i,j]\}\)
+                            \EndFor
+                        \EndFor
+                    \EndFor
+                    \State \Return \(D_n\)\Comment{\(D_n[i,j]=d(v_i,v_j)\)}
+                \EndProcedure 
+            \end{algorithmic}
+            \caption{Floyd-Warshall}
+            \label{alg:floydwarshall}
+        \end{algorithm}
+        \pagebreak
+        \vphantom
+        \\
+        \\
+        Consider the following problem.
+        \begin{compprob}[\textsc{Orthogonal Vectors (OV)}] \label{prob:ov}
+            \vphantom
+            \\
+            \begin{itemize}
+                \item Given two sets \(V=\{v_1,\ldots,v_n\}\subseteq[0,1]^d\) and \(W=\{w_1,\ldots,w_n\}\subseteq[0,1]^d\),
+                \item Decide: Does there exist \(v_i\in W\) and \(w_j\in W\) such that \(\iprod{v_i}{w_j}=\sum_{k=1}^d v_i[k]w_j[k]=0\)?
+            \end{itemize}
+        \end{compprob}
+        \vphantom
+        \\
+        \\
+        The naive algorithm is to compare every pair, compute the inner products, and compare to \(0\). We have \(n^2\) inner products to compute, and each takes \(d\) time, so the naive algorithm takes \(O(dn^2)\) time. Think of \(d=\log^k(n)\) for some \(k\). In this case, \(O(dn^2)=O(n^2\log^k(n))=\tilde{O}(n^2)\).
+        \begin{hypothesis}{\Stop\,\,No \(O(n^{2-\epsilon})\)-Time Algorithm for \textsc{OV}}{nobetterthanquadratictimeov}
+            For every \(\epsilon>0\), there exists no \(O(n^{2-\epsilon})\)-time algorithm for \textsc{OV} with \(d=\polylog(n)\).
+        \end{hypothesis}
+        \vphantom
+        \\
+        \\
+        So far, we have \(5\) hypotheses; what are the relations herein? We'll attack this question after a brief interlude on reductions.
+        \\
+        \\
+        We write \(L_1\leq L_2\) if problem \(L_1\) reduces to problem \(L_2\); that is, \(L_1\) is no harder than \(L_2\); and if \(L_1\) is hard, then \(L_2\) is hard. Equivalently, if \(L_2\) is easy, then \(L_1\) is easy. Consider the following definition, making precise the notion of a ``fine-grained reduction.''
+        \begin{definition}{\Stop\,\,(Virginia Vassilevska Williams) Fine-Grained Reductions}{finegrainedreductions}
+            Suppose \(L_1\) and \(L_2\) are computational problems. Let \(\ell_1=\ell_1(n)\) and \(\ell_2=\ell_2(n)\) be associated runtime bounds, say conjectured optimal bounds. Then, \(L_1\) \((\ell_1,\ell_2)\)-reduces to \(L_2\) if for every \(\epsilon>0\), there exists \(\delta>0\) and an algorithm \(R\) running in time \(O(\ell_1(n)^{1-\delta})\) and making \(q\) calls to an oracle for \(L_2\) on inputs of size \(n_1,\ldots,n_q\) where
+            \begin{equation*}
+                \sum_{i=1}^q \ell_2(n_i)^{1-\epsilon}\leq O(\ell_1(n)^{1-\delta}).
+            \end{equation*}
+        \end{definition}
+        \begin{remark*}
+            To understand Definition~\ref{def:finegrainedreductions}, consider the below figure.
+            \adit{Add Figure; see Lecture Notes}
+        \end{remark*}
+        \pagebreak
+        \begin{theorem}{\Stop\,\,(Ryan Williams, 2004): SETH \(\implies\) OV}{sethimpliesov}
+            Hypothesis~\ref{hyp:SETH} implies Hypothesis~\ref{hyp:nobetterthanquadratictimeov}.
+            \begin{proof}
+                Using Definition~\ref{def:finegrainedreductions}, we can restate this theorem as follows: for every \(k\in\mathbb{Z}^+\), \(k\)-\textsc{SAT} \((2^n,n^2)\)-reduces to \textsc{OV} with \(d=\polylog(n)\). We exhibit such a reduction, which will be of exponential-time.
+                \\
+                \\
+                Let \(\varphi(x_1,\ldots,x_n)=\bigwedge_{j=1}^m C_j\) be our \(k\)-\textsc{SAT} instance, with each \(C_j\) a \(k\)-clause. Partition \(X=\{x_i\}_{i=1}^n\) into \(X_1=\{x_1,\ldots,x_{\frac{n}{2}}\}\) and \(X_1=\{x_{\frac{n}{2}+1},\ldots,x_n\}\). Consider the \(N=2^\frac{n}{2}\) assignments to each of \(X_1\) and \(X_2\) independently. Then, let \(V_1,V_2\subseteq\{0,1\}^m\). For an assignment, \(a_1\) to literals in \(X_1\), \(v_{a_1}\in V_1\) is defined by
+                \begin{equation*}
+                    v_{a_1}[j]=\begin{cases}
+                    0 & a_1\text{ satisfies }C_j \\
+                    1 & \text{otherwise}
+                    \end{cases}.
+                \end{equation*}
+                Define \(v_{a_2}\in V_2\) similarly corresponding to \(a_2\) to literals in \(X_2\). We claim that \(\iprod{v_{a_i}}{v_{a_2}}=0\) if and only if \((a_1,a_2)\) is a satisfying assignment. Note that \(m=O(n^k)=O((2\log_2N)^k)=O(\log^kN)\), where \(N=2^\frac{n}{2}\). A \(O\left(N^{2-\epsilon}\right)\)-time algorithm for \textsc{OV} would then imply an \(O\left(N^{2-\epsilon}\right)=O\left(\left(2^\frac{n}{2}\right)^{2-\epsilon}\right)=O\left(2^{\left(1-\frac{\epsilon}{2}\right)n}\right)\)-time algorithm for \(k\)-\textsc{SAT}. 
+            \end{proof}
+        \end{theorem}
+        \begin{example}
+            Consider \(n=6\), \(m=3\), and \(k=3\) with
+            \begin{equation*}
+                \varphi(x_1,\ldots,x_6)=(\adit{Finish!})
+            \end{equation*}
+        \end{example}

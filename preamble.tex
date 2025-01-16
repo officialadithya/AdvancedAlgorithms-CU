@@ -23,6 +23,12 @@
 \usepackage[most]{tcolorbox}
 \usepackage{pgfplots}
 \usepackage{multicol}
+\usepackage[chapter]{algorithm}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\newcommand{\var}[1]{\textsc{#1}
+}
+\renewcommand{\thealgorithm}{\arabic{chapter}.\arabic{section}.\arabic{algorithm}}
 \usepgfplotslibrary{polar}
 \usepgflibrary{shapes.geometric}
 \usetikzlibrary{calc}
@@ -33,6 +39,8 @@
 \usetikzlibrary{graphs}
 
 \DeclareMathOperator{\arcsec}{arcsec}
+\DeclareMathOperator{\poly}{poly}
+\DeclareMathOperator{\polylog}{polylog}
 \DeclareMathOperator{\arccot}{arccot}
 \DeclareMathOperator{\arccsc}{arccsc}
 \DeclareMathOperator{\argmax}{argmax}
