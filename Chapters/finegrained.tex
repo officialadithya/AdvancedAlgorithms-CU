@@ -151,7 +151,7 @@
         \\
         \\
         We write \(L_1\leq L_2\) if problem \(L_1\) reduces to problem \(L_2\); that is, \(L_1\) is no harder than \(L_2\); and if \(L_1\) is hard, then \(L_2\) is hard. Equivalently, if \(L_2\) is easy, then \(L_1\) is easy. Consider the following definition, making precise the notion of a ``fine-grained reduction.''
-        \begin{definition}{\Stop\,\,(Virginia Vassilevska Williams) Fine-Grained Reductions}{finegrainedreductions}
+        \begin{definition}{\Stop\,\,(Vassilevska Williams) Fine-Grained Reductions}{finegrainedreductions}
             Suppose \(L_1\) and \(L_2\) are computational problems. Let \(\ell_1=\ell_1(n)\) and \(\ell_2=\ell_2(n)\) be associated runtime bounds, say conjectured optimal bounds. Then, \(L_1\) \((\ell_1,\ell_2)\)-reduces to \(L_2\) if for every \(\epsilon>0\), there exists \(\delta>0\) and an algorithm \(R\) running in time \(O(\ell_1(n)^{1-\delta})\) and making \(q\) calls to an oracle for \(L_2\) on inputs of size \(n_1,\ldots,n_q\) where
             \begin{equation*}
                 \sum_{i=1}^q \ell_2(n_i)^{1-\epsilon}\leq O(\ell_1(n)^{1-\delta}).
@@ -162,7 +162,7 @@
             \adit{Add Figure; see Lecture Notes}
         \end{remark*}
         \pagebreak
-        \begin{theorem}{\Stop\,\,(Ryan Williams, 2004): SETH \(\implies\) OV}{sethimpliesov}
+        \begin{theorem}{\Stop\,\,(Williams, 2004): SETH \(\implies\) OV}{sethimpliesov}
             Hypothesis~\ref{hyp:SETH} implies Hypothesis~\ref{hyp:nobetterthanquadratictimeov}.
             \begin{proof}
                 Using Definition~\ref{def:finegrainedreductions}, we can restate this theorem as follows: for every \(k\in\mathbb{Z}^+\), \(k\)-\textsc{SAT} \((2^n,n^2)\)-reduces to \textsc{OV} with \(d=\polylog(n)\). We exhibit such a reduction, which will be of exponential-time.
@@ -175,7 +175,7 @@
                     1 & \text{otherwise}
                     \end{cases}.
                 \end{equation*}
-                Define \(v_{a_2}\in V_2\) similarly corresponding to \(a_2\) to literals in \(X_2\). We claim that \(\iprod{v_{a_i}}{v_{a_2}}=0\) if and only if \((a_1,a_2)\) is a satisfying assignment. Note that \(m=O(n^k)=O((2\log_2N)^k)=O(\log^kN)\), where \(N=2^\frac{n}{2}\). A \(O\left(N^{2-\epsilon}\right)\)-time algorithm for \textsc{OV} would then imply an \(O\left(N^{2-\epsilon}\right)=O\left(\left(2^\frac{n}{2}\right)^{2-\epsilon}\right)=O\left(2^{\left(1-\frac{\epsilon}{2}\right)n}\right)\)-time algorithm for \(k\)-\textsc{SAT}. 
+                Define \(v_{a_2}\in V_2\) similarly corresponding to \(a_2\) with literals in \(X_2\). We claim that \(\iprod{v_{a_i}}{v_{a_2}}=0\) if and only if \((a_1,a_2)\) is a satisfying assignment. Note that \(m=O(n^k)=O((2\log_2N)^k)=O(\log^kN)\), where \(N=2^\frac{n}{2}\). A \(O\left(N^{2-\epsilon}\right)\)-time algorithm for \textsc{OV} would then imply an \(O\left(N^{2-\epsilon}\right)=O\left(\left(2^\frac{n}{2}\right)^{2-\epsilon}\right)=O\left(2^{\left(1-\frac{\epsilon}{2}\right)n}\right)\)-time algorithm for \(k\)-\textsc{SAT}. 
             \end{proof}
         \end{theorem}
         \begin{example}
@@ -184,3 +184,31 @@
                 \varphi(x_1,\ldots,x_6)=(\adit{Finish!})
             \end{equation*}
         \end{example}
+
+\pagebreak
+    
+\section{Lecture 3: January 21, 2025}
+
+    \subsection{Graph Diameter}
+
+        Consider the following problem.
+        \begin{compprob}[Graph Diameter] \label{prob:graphdiam}
+            \vphantom
+            \\
+            \begin{itemize}
+                \item Given a graph \(G=(V,E,w)\), 
+                \item Find: \(\max_{u,v\in V}d(u,v)\) where \(d(u,v)\) is the shortest path distance between \(u,v\in V\).
+            \end{itemize}
+            
+        \end{compprob}
+        \vphantom
+        \\
+        \\
+        An easy algorithm is to run Floyd-Warshall and output the largest distance found. This takes \(O(n^3)\) time.
+        \begin{theorem}{\Stop\,\,(Roddity-Vassilevska Williams) \textsc{OV} Reduction to \textsc{GraphDiameter}}{ovtographdiam}
+            The \textsc{OV} problem \((n^2,n^2)\) reduces to \textsc{GraphDiameter} on undirected, unweighted graphs with \(O(n)\) vertices and \(\tilde{O}(n)\) edges.
+            \begin{proof}
+                Let \(v=[v_1',\ldots,v_n']\in\{0,1\}^d\) and \(w=[w_1',\ldots,w_n']\in \{0,1\}^d\)
+            \end{proof}
+        \end{theorem}
+        \adit{Finish this! I was very tired during lecture...}
