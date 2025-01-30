@@ -189,7 +189,7 @@
     
 \section{Lecture 3: January 21, 2025}
 
-    \subsection{Graph Diameter}
+    \subsection{Graph Diameter and Smarter \(k\)-SAT}
 
         Consider the following problem.
         \begin{compprob}[Graph Diameter] \label{prob:graphdiam}
@@ -212,3 +212,190 @@
             \end{proof}
         \end{theorem}
         \adit{Finish this! I was very tired during lecture...}
+
+
+
+\pagebreak
+
+\section{Lecture 4: January 23, 2025}
+
+    \subsection{Smarter \(k\)-SAT, Part I}
+
+        [Monien-Speckenmeyer, 1985]
+
+        We've shown a \(O(1.913^n)\) algorithm for \(3\)-SAT. Can we do better? Yes, we can! Consider a clause \(C=x_1\vee x_2\vee x_2\). Note that
+        \begin{equation*}
+            C=x_1\vee x_2\vee x_2\iff x_1\vee(\neg x_1\wedge x_2)\vee(\neg x_1\wedge \neg x_2\wedge x_3).
+        \end{equation*}
+        We can think of the above formula as either setting the truth of one, two, or three literals. This gives rise to a modification of the previous recursive algorithm, making \(3\) recursive calls. This gives us the recurrence \(T(n)=T(n-1)+T(n-2)+T(n-3)+\poly(n)=O^*(\alpha^n)\) where \(\alpha\) is the unique real root to \(\alpha^n-\alpha^{n-1}-\alpha^{n-2}-\alpha^{n-3}=0\), or equivalently, \(\alpha^3-\alpha^2-\alpha-1\). Here, \(\alpha\leq 1.84\). So, \(T(n)=(1.84^n)\).
+        \\
+        \\
+        We now show how to reduce \(k\)-\textsc{SAT} to \(k-1\)-\textsc{SAT} where \(k\geq4\). Take the \(k\)-\textsc{SAT} formula
+        \begin{equation*}
+            \varphi=\bigwedge_{j=1}^m C_j.
+        \end{equation*}
+        We will map each clause \(C_j\) in \(\varphi\) to the conjunction of a \(k-1\)-clause, and a \(3\)-clause. We'll introduce a new variable \(y\) each time. Say
+        \begin{equation*}
+            C_j=(x_1^j,\ldots,x_k^j)\mapsto (x_1^j,\ldots,x_{k-2}^j\vee y)\wedge (\neg y\vee x_{k-1}^j\vee x_k^j).
+        \end{equation*}
+        Now, we consider local search algorithms for \(3\)-\textsc{SAT} [Spielman's Notes, \cite{schoning1999probabilisticksat}]. Here, we harness the power of randomness.
+        \begin{algorithm}[H] 
+            \begin{algorithmic}[1]
+                \Procedure{Sch\"oning\_SAT\_Framework}{$\varphi,\beta_n$} 
+                    \State Guess a uniformly random assignment to \(\vec{a}\in\{0,1\}^n\) to \(\varphi\).
+                    \For{\(j\in\{1,\ldots,\beta_n\}\)}
+                        \If{\(\varphi\) is satisfied by \(\vec{a}\)}
+                            \State \Return \(\vec{a}\)
+                        \Else
+                            \State Choose an unsatisfied clause \(C\) in \(\varphi\), and choose a variable \(x_i\) in \(C\) uniformly at random.
+                            \State Flip the assignment \(a_i\) to \(x_i\) in \(\vec{a}\).
+                        \EndIf
+                    \EndFor
+                    \State \Return \(\vec{a}\)
+                \EndProcedure 
+            \end{algorithmic}
+            \caption{Sch\"oning SAT}
+            \label{alg:schoningsat}
+        \end{algorithm}
+        \begin{example}
+            Say \(C=(x_1,x_2,x_3)\) with \(a_1=0\), \(a_2=0\), and \(a_3=0\). Since \(C\) is unsatisfied, we can flip one of the literals uniformly at random to satisfy \(C\).
+        \end{example}
+        \vphantom
+        \\
+        \\
+        Importantly, how do we choose \(\beta_n\)? Suppose that the initial assignment \(\vec{a}\) agrees with the satisfying assignment \(\vec{a}^*\) on a ``decent'' fraction of coordinates with ``decent'' probability. The steps in the loop can be thought of as doing a random walk on \(\{0,1\}^n\). At each step, \(\vec{a}\) gets closer to \(\vec{a}^*\) with probability at least \(\frac{1}{3}\) since at least one variable in each unsatisfied clause differs between \(\vec{a}\) and \(\vec{a}^*\). 
+        \\
+        \\
+        For ``Easy''-Sch\"oning, take \(\beta_n=n\). Say \(u\) is the number of coordinates in which \(\vec{a}\) and \(\vec{a}^*\) disagree. Then,
+        \begin{align*}
+            \Pr[\text{success}]&\geq \sum_{i=0}^n \Pr[u=i]\Pr[\text{first }i\text{ choices match}] \\
+            &=\sum_{i=0}^n \frac{1}{2^n}\binom{n}{i}\Pr[\text{first }i\text{ choices match}] \\
+            &\geq\frac{1}{2^n}\sum_{i=0}^n\binom{n}{i}\frac{1}{3^i} \\
+            &=\frac{1}{2^n}\left(1+\frac{1}{3}\right)^n \\
+            &=\left(\frac{2}{3}\right)^n.
+        \end{align*}
+        Intuitively, we sample a random assignment \(\vec{a}\) which disagrees in \(i\) coordinates from \(\vec{a}^*\). We want to keep flipping assigments so that \(\vec{a}=\vec{a}^*\). The algorithm succeeds with probability at least \(\left(\frac{2}{3}\right)^n\). So, we can repeat Algorithm~\ref{alg:schoningsat} roughly \(\left(\frac{3}{2}\right)^n\) with \(\beta=n\) times to find a solution with high probability.
+        \adit{FINISH THIS! (and undertsnad this fully!)}
+        \\
+        \\
+        We now present another result: the sparsification lemma. Morally, we can reduce solving a \(k\)-\textsc{SAT} instance with \(n\) variables to solving several \(k\)-\textsc{SAT} instances each with \(n\) variables \(O(n)\) clauses. Informally, ``every \(k\)-\textsc{SAT} formula has \(O(n)\) clauses.''
+        \begin{lemma}{\Stop\,\,The Sparsification Lemma}{sparsificationlemma}
+            Let \(\epsilon>0\) and \(k\geq3\). Then, there is a \(2^{\epsilon n}\poly(n)\)-time algorithm that takes a \(k\)-\textsc{SAT} formula \(\varphi\) on \(n\) variables as input and produces \(2^{\epsilon n}\) \(k\)-\textsc{SAT} formulas \(\varphi_1,\ldots,\varphi_{2^{\epsilon n}}\), each of which has \(n\) variables and \(n\left(\frac{k}{\epsilon}\right)^{O(k)}=O(n)\) clauses. Furthermore, \(\varphi\) is satisfiable if and only if \(\bigvee_i \varphi_i\) is satisfied.
+        \end{lemma}
+        \vphantom
+        \\
+        \\
+        With the help of Lemma~\ref{lem:sparsificationlemma}, we can show that the ``strong'' exponential time hypothesis indeed implies the exponential time hypothesis.
+        \adit{TODO! HW.}
+        % We called Hypothesis~\ref{hyp:SETH} the ``strong'' exponential time hypothesis. But, does Hypothesis~\ref{hyp:SETH} imply Hypothesis~\ref{hyp:ETH}, the exponential time hypothesis?
+
+\pagebreak
+
+\section{Lecture 5: January 28, 2025}
+
+    \subsection{Smarter \(k\)-SAT, Part II}
+
+        Now, what if we apply the framework behind Algorithm~\ref{alg:schoningsat} with \(\beta_n=3n\)? Let's analyze the probability that 
+        \begin{enumerate}
+            \item the initial assignment \(\vec{a}\) disagrees with \(\vec{a}^*\) on exactly \(i\) coordinates, and
+            \item the first \(3i\) steps of the walk include at least \(2i\) ``good'' choices.
+        \end{enumerate}
+        For (1), the analysis is very similar to ``Easy''-Sch\"oning. First, recall that for \(i\geq 2\),
+        \begin{equation*}
+            \binom{3i}{i}\geq \frac{1}{\sqrt{5i}}\frac{3^{3i}}{2^{2i}}
+        \end{equation*}
+        by Stirling's approximation. Then,
+        \begin{align*}
+            \Pr[\text{at least }2i\text{ of the first }3i\text{ choices are good}]&\geq\binom{3i}{i}\left(\frac{1}{3}\right)^{2i}\left(\frac{2}{3}\right)^i \\
+            &\geq \frac{1}{\sqrt{3i}}\frac{3^{3i}}{2^{2i}}  \left(\frac{1}{3}\right)^{2i}\left(\frac{2}{3}\right)^i
+        \end{align*}
+        Then,
+        \begin{align*}
+            \Pr[\text{success}]&\geq \sum_{i=0}^n\Pr[u=i]\Pr[\text{at least }2i\text{ of the first }3i\text{ choices are good}] \\
+            &\geq \frac{1}{2^n}\sum_{i=0}^n \binom{n}{i}\binom{3i}{i}  \left(\frac{1}{3}\right)^{2i}\left(\frac{2}{3}\right)^i \\
+            &\geq \frac{1}{2^n}\sum_{i=0}^n \binom{n}{i}\frac{1}{\sqrt{3i}}\frac{3^{3i}}{2^{2i}}  \left(\frac{1}{3}\right)^{2i}\left(\frac{2}{3}\right)^i \\
+            &\geq \frac{1}{2^n\sqrt{5n}}\sum_{i=0}^n\binom{n}{i}\frac{1}{\sqrt{3i}}\frac{3^{3i}}{2^{2i}}  \left(\frac{1}{3}\right)^{2i}\left(\frac{2}{3}\right)^i \\
+            &=\frac{1}{2^n\sqrt{5n}}\sum_{i=0}^n\binom{n}{i}\frac{1}{2^i} \\
+            &=\frac{1}{2^n\sqrt{5n}}\left(1+\frac{1}{2}\right)^n \\
+            &=\frac{1}{\sqrt{5n}}\left(\frac{3}{4}\right)^n.
+        \end{align*}
+        Proceeding similarly, we can run Algorithm~\ref{alg:schoningsat} roughly \(O^*\left(\frac{4}{3}\right)^n\) times with \(\beta=3n\) times to find a solution with high probability.
+        \begin{question*}
+            Is this optimal?
+        \end{question*}
+        \begin{answer*}
+            No! But, we'll end here.
+        \end{answer*}
+
+        
+\section{Lecture 6: January 30, 2025}
+
+    \subsection{Nontrivial Nondeterministic Algorithms: SETH and Other Assumptions}
+
+        Consider the following definition.
+        \begin{definition}{\Stop\,\,NTIME}{ntime}
+            A language \(L\subseteq\{0,1\}^n\) is in \(\NTIME(f_n)\) if there exists an algorithm \(M\) such that for \(x\in\{0,1\}^*\) with \(|x|=n\), \(M\) runs in time \(f(n)\) and
+            \begin{enumerate}
+                \item if \(x\in L\), then there exists \(w\in\{0,1\}^*\) with \(M(x,w)\) accepting, and
+                \item if \(x\nin L\), for all \(w\in\{0,1\}^*\), \(M(x,w)\) is rejecting.
+            \end{enumerate}
+        \end{definition}
+        \begin{remark*}
+            The familiar complexity class \(\com{NP}\) is given by
+            \begin{equation*}
+                \com{NP}=\bigcup_{k\in\mathbb{N}}\NTIME(n^k).
+            \end{equation*}
+        \end{remark*}
+        \vphantom
+        \\
+        \\
+        Herein, we reference \cite{carmosino2016nseth}. Recall that \(k\textsc{-SAT}\in\com{NP}\).
+        \begin{question*}
+            Can we say anything about verifying that a \(k\)\textsc{-SAT} formula is unsatisfiable?
+        \end{question*}
+        \begin{hypothesis}{\Stop\,\,NSETH}{nseth}
+            For every \(\epsilon>0\), there exists \(k\) with \(\bar{k\textsc{-SAT}}\nin\NTIME\left(2^{(1-\epsilon)n}\right)\).
+        \end{hypothesis}
+        \begin{remark*}
+            NSETH essentially hypothesizes that \(k\textsc{-SAT}\) has no nontrivial verification algorithm.
+        \end{remark*} 
+        \vphantom
+        \\
+        \\
+        The key takeways of \cite{carmosino2016nseth} are that
+        \begin{enumerate}
+            \item assuming NSETH, \(\bar{k\textsc{-SAT}}\) does not have nontrivial nondeterministic algorithms,
+            \item \(\bar{3\textsc{-Sum}}\) and \(\bar{\textsc{APSP}}\) do have nontrivial nondeterministic algorithms, and
+            \item assuming (1), (2) and NSETH, there is no fine-grained reduction from \(k\textsc{-SAT}\) to \(3\textsc{-Sum}\) or \(\textsc{APSP}\), as opposed to the \(k\textsc{-SAT}\) to \(\textsc{OV}\) reduction.
+        \end{enumerate}
+        
+        \pagebreak
+
+        Consider the following theorem.
+        \begin{theorem}{\Stop\,\,\cite{carmosino2016nseth} Nondeterministically Solving \(\bar{3\textsc{-Sum}}\) in \(\tilde{O}(n^{\frac{3}{2}})\) Time}{n1.5nondetalgforbar3sum}
+            There is a \(\tilde{O}\left(n^{\frac{3}{2}}\right)\)-time nondeterministic algorithm for \(\bar{3\textsc{-Sum}}\).
+            \begin{proof}
+                Take the variant of \(3\textsc{-Sum}\) where we are given a single list \(A=[a_1,\ldots,a_n]\) where \(a_i\in[-n^c,n^c]\), and we are to decide if there exist \(a_i,a_j,a_k\in A\) with \(a_i+a_j+a_k=0\). So, for \(\bar{3\textsc{-Sum}}\), we must verify that for all \(i,j,k\in\{1,\ldots,n\}\), \(a_i+a_j+a_k\neq0\). The witness is a triple \((p,t,S)\) where 
+                \begin{enumerate}
+                    \item \(p\) is a prime which is at most the \(n^{1.5\textsc{th}}\) prime number,
+                    \item \(S=\{(i,j,k):a_i+a_j+a_j\equiv0\pmod{p}\}\), and
+                    \item \(t\in\mathbb{Z}\cap[0,3cn^{1.5}\log n]\) such that \(t=|S|\).
+                \end{enumerate}
+                We wish to show that such a witness exists. Let \(R\) be the set of all pairs \(((i,j,k),p)\) where \(p\) is a prime which is at most the \(n^{1.5\textsc{th}}\) prime number and \(a_i+a_j+a_k\equiv0\pmod{p}\). Then, \(|R|\leq n^3\log(3n^c)\leq 3cn^3\log n\). There are \(n^3\) triples \((i,j,k)\), and \(3n^c\) gives an upper bound on the magnitude of \(a_i+a_j+a_k\), and the logarithm is an upper bound on the number of prime factors of this quantity. Now, by an averaging argument, there must exist \(p_0\) which is at most the \(n^{1.5\textsc{th}}\) prime number such that the number of pairs \(((i,j,k),p_0)\) is at most \(\frac{|R|}{n^{1.5}}\leq 3cn^{1.5}\log n\). We now show verification given input \(A\). First, check that for all \(r\in\{1,\ldots,t\}\),
+                \begin{equation*}
+                    a_{ir}+a_{jr}+a_{kr}\equiv0\pmod{p},\quad a_{ir}+a_{jr}+a_{kr}\neq0.
+                \end{equation*}
+                Then compute the number of triples summing to \(0\) modulo \(p\) compare this with \(t\). To compute all triple sums, map
+                \begin{equation*}
+                    A=[a_1,\ldots,a_n]\mapsto q_A(x)=\sum_{i}x^{a_i\bmod p}
+                \end{equation*}
+                and use the fast Fourier transform to compute \((q_A(x))^3\). If \(b_j\) is the coefficient of \(x^j\) in \((q_A(x))^3\), \(b_3\) is the number of triples in \(\{a_1\bmod p,\ldots,a_n\bmod p\}\) summing to \(j\). Now, since \(\deg (q_A(x))^3\leq 3(p-1)<3p\), we can just check
+                \begin{equation*}
+                    b_0+b_{p}+b_{2p}=t,
+                \end{equation*}
+                and accept if we have equality, and reject otherwise.
+                \\
+                \\
+                For complexity, the first check for \(r\in\{1,\ldots,t\}\) takes time \(O(t)=O\left(n^{\frac{3}{2}}\log n\right)\). The fast Fourier transform computation takes time \(O(p\log p)=\tilde{O}\left(n^\frac{3}{2}\right)\) where \(p=O\left(n^{\frac{3}{2}}\log n\right)\). In short, our procedure takes \(O\left(n^{\frac{3}{2}}\log n\right)\), as desired.
+            \end{proof}
+        \end{theorem}

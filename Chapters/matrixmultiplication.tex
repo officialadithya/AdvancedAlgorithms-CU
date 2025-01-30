@@ -1,0 +1,60 @@
+\section{Lecture 6: January 30, 2025}
+
+    \subsection{Introduction to Matrix Multiplication}
+
+        Consider the following problem.
+        \begin{compprob}[\textsc{Matrix Multiplication}] \label{prob:matmul}
+            \vphantom
+            \\
+            \begin{itemize}
+                \item Given matrices \(A,B\in\mathbb{R}^{n\times n}\),
+                \item Find: \(C=AB\), where \(c_{ij}=\sum_{k=1}^n a_{ik}b_{kj}\).
+            \end{itemize}
+        \end{compprob}
+        \vphantom
+        \\
+        \\
+        Naively, we immediately have an \(O(n^3)\) algorithm. We compute \(n^2\) inner products, each taking time \(O(n)\).
+        \begin{question*}
+            Can we do better?
+        \end{question*}
+        \begin{answer*}
+            Yes, we can!
+        \end{answer*}
+        \begin{definition}{\Stop\,\,\textsc{Matrix Multiplication} Exponent}{matmulexponent}
+            The \textsc{Matrix Multiplication} exponent is
+            \begin{equation*}
+                \omega=\inf\left\{\omega'>0:\forall\epsilon, \exists \text{ an algorithm to solve}\textsc{ Matrix Multiplication}\text{ in }O\left(n^{\omega'+\epsilon}\right)\text{ time}\right\}.
+            \end{equation*}
+        \end{definition}
+        \begin{remark*}
+            We know \(\omega\in[2,3]\). It is a conjecture that \(\omega=2\). The best known upper bound is \(\omega<2.371539\) due to \adit{cite}.
+        \end{remark*}
+        \vphantom
+        \\
+        \\
+        We show how to improve \(\omega\) by exploring Strassen's algorithm, using the divide and conquer paradigm. The key idea is to write \(A\) and \(B\) in block form, and compute the product blockwise. That is, \adit{check this}
+        \begin{equation*}
+            AB=\begin{bmatrix}
+                A_{11} & A_{12} \\
+                A_{21} & A_{22}
+            \end{bmatrix}
+            \begin{bmatrix}
+                B_{11} & B_{12} \\
+                B_{21} & B_{22}
+            \end{bmatrix}=
+            \begin{bmatrix}
+                A_{11}B_{11}+A_{12}B_{21} & A_{11}B_{12}+A_{12}B_{22} \\
+                A_{21}B_{11}+A_{22}B_{21} & A_{21}B_{12}+A_{22}B_{22} 
+            \end{bmatrix}
+        \end{equation*}
+        Naively, a divide and conquer approach would give the recurrence \(8T\left(\frac{n}{2}\right)+O(n^2)\) since we'd have \(8\) multiplications, each taking \(O(n^2)\) time. But, \(T(n)=O(n^{\log_2 8})=O(n^3)\). It turns out that if we're clever, we can reduce \(8\) multiplications to \(7\).
+        \begin{algorithm}[H] 
+            \begin{algorithmic}[1]
+                \Procedure{Strassen}{$A,B$} 
+                    \State \Return
+                \EndProcedure 
+            \end{algorithmic}
+            \caption{Strassen}
+            \label{alg:strassen}
+        \end{algorithm}
