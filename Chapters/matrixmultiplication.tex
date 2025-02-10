@@ -21,19 +21,19 @@
         \begin{answer*}
             Yes, we can!
         \end{answer*}
-        \begin{definition}{\Stop\,\,\textsc{Matrix Multiplication} Exponent}{matmulexponent}
-            The \textsc{Matrix Multiplication} exponent is
+        \begin{definition}{\Stop\,\,\textsc{Matrix Multiplication} Exponent}{matmulexp}
+            The \textsc{Matrix Multiplication} exponent \(\omega\) is
             \begin{equation*}
                 \omega=\inf\left\{\omega'>0:\forall\epsilon, \exists \text{ an algorithm to solve}\textsc{ Matrix Multiplication}\text{ in }O\left(n^{\omega'+\epsilon}\right)\text{ time}\right\}.
             \end{equation*}
         \end{definition}
         \begin{remark*}
-            We know \(\omega\in[2,3]\). It is a conjecture that \(\omega=2\). The best known upper bound is \(\omega<2.371539\) due to \adit{cite}.
+            We know \(\omega\in[2,3]\). It is a conjecture that \(\omega=2\). The best known upper bound is \(\omega<2.371539\) due to \cite{alman2024asymmetry}.
         \end{remark*}
         \vphantom
         \\
         \\
-        We show how to improve \(\omega\) by exploring Strassen's algorithm, using the divide and conquer paradigm. The key idea is to write \(A\) and \(B\) in block form, and compute the product blockwise. That is, \adit{check this}
+        We show how to improve \(\omega\) by exploring Strassen's algorithm, using the divide and conquer paradigm. The key idea is to write \(A\) and \(B\) in \(2\times 2\) block form, and compute the product blockwise. That is, 
         \begin{equation*}
             AB=\begin{bmatrix}
                 A_{11} & A_{12} \\
@@ -48,13 +48,179 @@
                 A_{21}B_{11}+A_{22}B_{21} & A_{21}B_{12}+A_{22}B_{22} 
             \end{bmatrix}
         \end{equation*}
-        Naively, a divide and conquer approach would give the recurrence \(8T\left(\frac{n}{2}\right)+O(n^2)\) since we'd have \(8\) multiplications, each taking \(O(n^2)\) time. But, \(T(n)=O(n^{\log_2 8})=O(n^3)\). It turns out that if we're clever, we can reduce \(8\) multiplications to \(7\).
+        
+        
+\pagebreak
+
+\section{Lecture 7: February 4, 2025}
+
+    \subsection{Strassen's Algorithm \& Tensor Rank Techniques}
+
+        Naively, a divide and conquer approach for matrix multiplication, following the outline of the previous section, would give the recurrence \(8T\left(\frac{n}{2}\right)+O(n^2)\) since we'd have \(8\) multiplications, each taking \(O(n^2)\) time. But, \(T(n)=O(n^{\log_2 8})=O(n^3)\). It turns out that if we're clever, we can reduce \(8\) multiplications to \(7\). In this section, we explore this approach, \cite{strassen1969gaussian}. Those familiar with Karatsuba's algorithm for multiplication should notice parallels. 
         \begin{algorithm}[H] 
             \begin{algorithmic}[1]
                 \Procedure{Strassen}{$A,B$} 
-                    \State \Return
+                    \State \(M_1 \gets \Call{Strassen}{A_{11}+A_{22}, B_{11}+B_{22}}\)
+                    \State \(M_2 \gets \Call{Strassen}{A_{21}+A_{22}, B_{11}}\)
+                    \State \(M_3 \gets \Call{Strassen}{A_{11}, B_{12}-B_{22}}\)
+                    \State \(M_4 \gets \Call{Strassen}{A_{22}, B_{21}-B_{11}}\)
+                    \State \(M_5 \gets \Call{Strassen}{A_{11}+A_{12}, B_{22}}\)
+                    \State \(M_6 \gets \Call{Strassen}{A_{21}-A_{11}, B_{11}+B_{12}}\)
+                    \State \(M_7 \gets \Call{Strassen}{A_{12}-A_{22}, B_{21}+B_{22}}\)
+                    \State \Return \(\begin{bmatrix} M_1+M_4-M_3+M_7 & M_3+M_5 \\ M_2+M_4 & M_1-M_2+M_3+M_6 \end{bmatrix}\)
                 \EndProcedure 
             \end{algorithmic}
             \caption{Strassen}
             \label{alg:strassen}
         \end{algorithm}
+        \vphantom
+        \\
+        \\
+        To analyze runtime for Strassen's algorithm, we have that \(7T\left(\frac{n}{2}\right)+O(n^2)=O\left(n^{\log_27}\right)=O\left(n^{2.808}\right)\). Now, we seek to generalize Strassen's method. We follow \cite{alman2021algorithms}.
+        \begin{definition}{\Stop\,\,Order \(3\) Tensors}{order3tensors}
+            Let \(\mathbb{F}\) be a field. An order \(3\) tensor \(T\in\mathbb{F}^{a\times b\times c}\) over \(\mathbb{F}\) is a bilinear map
+            \begin{equation*}
+                T:\mathbb{F}^a\times\mathbb{F}^b\to\mathbb{F}^c.
+            \end{equation*}
+        \end{definition}
+        \begin{remark*}
+            Equivalently, we can think of order \(3\) tensors as
+            \begin{enumerate}
+                \item \(3\)-dimensional array structures over \(\mathbb{F}\),
+                \item a trilinear map \(T:\mathbb{F}^a\times\mathbb{F}^b\times \mathbb{F}^c\to\mathbb{F}\), or 
+                \item a trilinear polynomial 
+                \begin{equation*}
+                    \sum_{i=1}^a \sum_{j=1}^b \sum_{k=1}^c T[i,j,k]x_iy_jz_k.
+                \end{equation*}
+            \end{enumerate}
+        \end{remark*}
+        \vphantom
+        \\
+        \\
+        We can think of \(n\times n\) square matrix multiplication as a bilinear map \(\mathbb{F}^{n^2}\times\mathbb{F}^{n^2}\to\mathbb{F}^{n^2}\).
+        \begin{definition}{\Stop\,\,Matrix Multiplication Tensor}{matmultensor}
+        Let \(\mathbb{F}\) be a field. The \(a\times b\times c\) matrix multiplication tensor \(\langle a,b,c\rangle\) is given by
+        \begin{equation*}
+            \sum_{i=1}^a \sum_{k=1}^b \sum_{j=1}^c x_{i,k}y_{k,j}z_{i,j}=\sum_{i=1}^a \sum_{j=1}^c z_{i,j}\left(\sum_{k=1}^b x_{i,k}y_{k,j}\right),
+        \end{equation*}
+        corresponding to a bilinear map \(\mathbb{F}^{ac}\times \mathbb{F}^{cb}\to \mathbb{F}^{ab}\).
+        \end{definition}
+        \begin{remark*}
+            If we substitute in the entries of \(x\) and \(y\) from the matrices, the coefficient of \(z_{i,j}\) corresponds to the \(i,j\) entry in the matrix product.
+        \end{remark*}
+        \begin{definition}{\Stop\,\,Tensor Rank}{tensorrank}
+            Let \(T\) be a tensor over finite sets of variables \(X\), \(Y\), and \(Z\). A tensor over \(\mathbb{F}\) has rank \(1\) if there exist coefficients \(\alpha_x,\beta_y,\gamma_z\in\mathbb{F}\) with
+            \begin{equation*}
+                T=\left(\sum_{x\in X}\alpha_x X\right)\left(\sum_{y\in Y}\beta_y y\right)\left(\sum_{z\in Z}\gamma_z z\right).
+            \end{equation*}
+            Then, the rank, \(\rank(T)\), of a general tensor \(T\) is the minimum of rank \(1\) tensors that sum up to \(T\).
+        \end{definition}
+        \vphantom
+        \\
+        \\
+        We now detail an intimate connection between tensor rank and fast matrix multiplication.
+        \begin{theorem}{\Stop\,\,Upper Bounding Matrix Multiplication Tensor Rank \(\to\) Fast Algorithms}{upperboundmatmultensorrank}
+            If \(\rank(\langle q,q,q\rangle)\leq r\), then there exists a \(O\left(n^{\log_qr}\right)\)-time matrix multiplication algorithm.
+            \begin{proof}
+                By the definition of tensor rank, we have that
+                \begin{align*}
+                    \langle q,q,q\rangle&=\sum_{i=1}^q\sum_{j=1}^q\sum_{k=1}^q x_{i,k}y_{k,j}z_{i,j} \\
+                    &=\sum_{\ell=1}^r\left(\sum_{i=1}^q\sum_{k=1}^q\alpha_{i,k}^{(\ell)} x_{i,k}\right)\left(\sum_{k=1}^q\sum_{j=1}^q\beta_{k,j}^{(\ell)} y_{k,j}\right)\left(\sum_{i=1}^q\sum_{j=1}^q\gamma_{i,j}^{(\ell)} y_{i,j}\right)
+                \end{align*}
+                for coefficients \(\alpha_{i,k}^{(\ell)},\beta_{k,j}^{(\ell)},\gamma_{i,j}^{(\ell)}\in\mathbb{F}\). Assume \(q|n\) without loss of generality, and form \(q\times q\) blocks of \(X,Y\in\mathbb{F}^{n\times n}\). Then, each block \(X_{i,k}, Y_{k,j}\in\mathbb{F}^{\frac{n}{q}\times\frac{n}{q}}\). Then, substitute in the blocks into the right-hand side of the above equation, and compute the coefficient of each \(z_{i,j}\) to compute \(Z_{i,j}\). Recurse to compute products of the \(\frac{n}{q}\times\frac{n}{q}\) matrices. Each term corresponding to a rank \(1\) tensor indexed by \(\ell\) takes \(3q^2\) additions and one multiplication of \(\frac{n}{q}\times\frac{n}{q}\) matrices. This gives us the recurrence
+                \begin{equation*}
+                    T(n)=rT\left(\frac{n}{q}\right)+O(n^2)=O\left(n^{\log_q r}\right),
+                \end{equation*}
+                as desired.
+            \end{proof}
+        \end{theorem}
+        \vphantom
+        \\
+        \\
+        Applying Theorem~\ref{thm:upperboundmatmultensorrank} from above, we have the following results.
+        \begin{corollary}{\Stop\,\,\cite{strassen1969gaussian}'s Bound}{strassenbound}
+            Note \(\rank(\langle 2,2,2\rangle)\leq7\), so we have an \(O\left(n^{\log_2 7}\right)\)-time matrix multiplication algorithm. 
+        \end{corollary}
+        \begin{corollary}{\Stop\,\,\cite{pan1978strassennotopt}'s Bound}{panbound}
+            Note \(\rank(\langle 70,70,70\rangle)\leq143640\), so we have an \(O\left(n^{\log_{70} 143640}\right)\)-time matrix multiplication algorithm. 
+        \end{corollary}
+   
+        \begin{definition}{\Stop\,\,\textsc{Rectangular Matrix Multiplication} Exponent}{rectmatmulexp}
+            The \textsc{Rectangular Matrix Multiplication} exponent \(\omega\) is
+            \footnotesize\begin{equation*}
+                \omega(a,b,c)=\inf\left\{\omega'>0:\forall\epsilon>0,\exists\text{ an algorithm for multiplying }A\in\mathbb{R}^{n^a\times n^b}\text{ and }B\in\mathbb{R}^{n^b\times n^c}\text{ in }O\left(n^{\omega'+\epsilon}\text{ time}\right)\right\}.
+            \end{equation*}
+        \end{definition}
+        \begin{definition}{\Stop\,\,Dual \textsc{Matrix Multiplication} Exponent}{dualmatmulexp}
+            The dual \textsc{Matrix Multiplication} exponent \(\alpha\) is
+            \begin{equation*}
+                \alpha=\sup\{\alpha'>0:\omega(1,1,\alpha')=2\}.
+            \end{equation*}
+        \end{definition}
+        \begin{remark*}
+            By \cite{williams2023new}, \(\alpha\geq0.321334\). Also, \(\alpha=1\) if and only if \(\omega=2\).
+        \end{remark*}
+
+\pagebreak
+
+\section{Lecture 8: February 6, 2025}
+
+    \subsection{Matrix Multiplication Verification}
+
+        Consider the following problem.
+        \begin{compprob}[\textsc{Matrix Multiplication Verification}] \label{prob:matmulverify}
+            \vphantom
+            \\
+            \begin{itemize}
+                \item Given matrices \(A,B,C\in\mathbb{R}^{n\times n}\),
+                \item Decide: \(AB=C\)?
+            \end{itemize}
+        \end{compprob}
+        \vphantom
+        \\
+        \\
+        Naively, we immediately have an \(O(n^\omega)\) algorithm by an easy reduction to \textsc{Matrix Multiplication}.
+        \begin{question*}
+            Can we do better?
+        \end{question*}
+        \begin{answer*}
+            Yes, we can!
+        \end{answer*}
+        \vphantom
+        \\
+        \\
+        We present a natural randomized algorithm, due to \cite{freivalds1979mfcs}.
+        \begin{algorithm}[H] 
+            \begin{algorithmic}[1]
+                \Procedure{Freivalds\_MMV}{$A,B,C$} 
+                    \State Sample \(x\sim\{0,1\}^n\) uniformly at random.
+                    \State \Return \(ABx=Cx\) \Comment{Compute \(ABx\) as \(A(Bx)\)}
+                \EndProcedure 
+            \end{algorithmic}
+            \caption{Freivalds' \textsc{Matrix Multiplication Verification}}
+            \label{alg:freivaldsmmv}
+        \end{algorithm}
+        \vphantom
+        \\
+        \\
+        For correctness, let \(D=AB-C\) and observe that \(Dx=0\) if and only if \(ABx=Cx\). If \(D=0\), then \(Dx=0\) with probability \(1\). If \(D\neq0\), \(D\) has a nonzero row \(d\). Then,
+        \begin{align*}
+            \Pr_x[Dx=0]\leq \Pr_x[\iprod{d}{x}=0]\leq\frac{1}{2}.
+        \end{align*}
+        Algorithm~\ref{alg:freivaldsmmv} runs in \(O(n^2)\) time. Note that Freivalds' procedure uses \(n\) random bits. Naturally, we ask how to partially derandomize while still retaining \(o\left(n^\omega\right)\) time. 
+
+    \subsection{Sparse Matrix Multiplication}
+
+        Another natural question is how we can do better in the case of sparse matrices. Here, we follow \cite{yuster2005fastsparse}.
+        \begin{compprob}[\textsc{Sparse Matrix Multiplication}] \label{prob:sparsematmul}
+            \vphantom
+            \\
+            \begin{itemize}
+                \item Given matrices \(A,B\in\mathbb{R}^{n\times n}\), each with at most \(m\) nonzero entries,
+                \item Find \(C=AB\).
+            \end{itemize}
+        \end{compprob}
+        \vphantom
+        \\
+        \\
+        We have two critical observations that we rely on. First, let \(A,B\in\mathbb{R}^{n\times n}\) where \(A\) has columns \(a_i\) and \(B\) has rows \(b_i\). Then, \(AB=\sum_{i=1}^n a_ib_i\). Also, for any permutation \(\pi\), \(\sum_{i=1}^n a_ib_i=\sum_{i=1}^n a_{\pi(i)}b_{\pi(i)}\).

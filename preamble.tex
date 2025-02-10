@@ -122,7 +122,7 @@
 \newtheorem*{question*}{Question}
 \newtheorem*{answer*}{Answer}
 \newtheorem{compprob}{Computational Problem}
-\newtheorem*{corollary*}{Corollary}
+% \newtheorem*{corollary*}{Corollary}
 \newtcbtheorem[number within=section]{definition}{Definition}{
                 lower separated=false,
                 breakable,
@@ -134,6 +134,18 @@
                 enhanced,
                 attach boxed title to top left={yshift=-0.1in,xshift=0.15in},
                 }{def}
+
+\newtcbtheorem[number within=section]{corollary}{Corollary}{
+  lower separated=false,
+  breakable,
+  before skip=0.5cm,
+  colback=white,
+  colframe=black,fonttitle=\bfseries,
+  colbacktitle=black,
+  coltitle=white,
+  enhanced,
+  attach boxed title to top left={yshift=-0.1in,xshift=0.15in},
+  }{cor}
                 
 % \newtcbtheorem[number within=section]{example}{Example}{
 %                 lower separated=false,
