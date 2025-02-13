@@ -1,0 +1,96 @@
+\section{Lecture 10: February 13, 2025}
+
+    \subsection{Graph Coloring}
+
+        We introduce the graph coloring problem.
+        \begin{compprob}[\textsc{Graph \(k\)-Coloring}] \label{prob:graphcolor}
+            \vphantom
+            \\
+            \begin{itemize}
+                \item Given a unweighted and undirected graph \(G=(V,E)\) and \(k\in\mathbb{Z}^+\),
+                \item Decide: Does there exist an admissible \(k\)-coloring of \(G\)?
+            \end{itemize}
+        \end{compprob}
+        \vphantom
+        \\
+        \\
+        For now, take \(k=3\). Note that \(k=2\) corresponds to deciding whether the given graph is bipartite, easily done in polynomial time. There are several algorithms for determining whether \(G\) is \(3\)-colorable. We describe certain techniques at a high level below.
+        \begin{algorithm}[H] 
+            \begin{algorithmic}[1]
+                \Require \(G=(V,E)\).
+                \Procedure{3-Color-Reduction-2-Color}{$G$} 
+                    \For{each subset \(R\subseteq V\) with \(|R|\leq\frac{n}{3}\)}
+                        \State Attempt to \(2\)-color \((V\backslash R,E)\) with \textsc{Green} and \textsc{Blue}
+                        \State \Return the coloring if successful.
+                    \EndFor
+                \EndProcedure 
+            \end{algorithmic}
+            \caption{3-Coloring via a Reduction to 2-Coloring}
+            \label{alg:3color-reduce-to-2color}
+        \end{algorithm}
+        \vphantom
+        \\
+        \\
+        The running time of Algorithm~\ref{alg:3color-reduce-to-2color} is 
+        \begin{equation*}
+            \left(\sum_{i=1}^{\binom{n}{3}} \binom{n}{i}\right)\poly(n).
+        \end{equation*}
+        Then, we analyze the highest term and see that \adit{...}
+        \begin{equation*}
+            \binom{n}{\frac{n}{3}}=
+        \end{equation*}
+        \begin{algorithm}[H] 
+            \begin{algorithmic}[1]
+                \Require \(G=(V,E)\).
+                \Procedure{3-Color-Reduction-2-Sat}{$G$} 
+                    \For{\(v\in V\)}
+                        \State Repeatedly randomly choose an assignment \(\ell(v)\) of two colors to \(v\)
+                    \EndFor
+                    \State Find a \(3\)-coloring respecting \(\ell(v_1),\ldots,\ell(v_n)\) by a reduction to \(\textsc{2-Sat}\).
+                \EndProcedure 
+            \end{algorithmic}
+            \caption{3-Coloring via a Reduction to 2-Coloring}
+            \label{alg:3color-reduce-to-2sat}
+        \end{algorithm}
+        \vphantom
+        \\
+        \\
+        The idea behind Algorithm~\ref{alg:3color-reduce-to-2sat} is to fix a legal \(3\)-coloring \(c^\star\) of \(G\), and for each vertex, we can randomly select two colors from \(\{\textsc{Red},\textsc{Green},\textsc{Blue}\}\). We want one of them to correspond with \(c^\star\). Then,
+        \begin{equation*}
+            \Pr[\text{all }n\text{ guesses agree with }c^\star]=\left(\frac{2}{3}\right)^n
+        \end{equation*}
+        \begin{lemma*}
+            Suppose that we have guesses \(\ell(v)\in \{\textsc{Red},\textsc{Green},\textsc{Blue}\}^2\) that agree with \(c^\star\) for all \(n\) vertices. Then, we can find a \(3\)-coloring of \(G\) in \(\poly(n)\) time.
+            \begin{proof}
+                Construct a \textsc{2-Sat} instance with one variable \(x_i\) for each vertex \(v_i\in G\). The values that can be assigned to \(x_i\) are in one-to-one correspondence with the colors in \(\ell(v_i)\). Then, for each edge \((v_i,v_j)\), add either one or two \(2\)-clauses, depending on \(|\ell(v_i)\cap\ell(v_j)|\).
+            \end{proof}
+        \end{lemma*}
+        \vphantom
+        \\
+        \\
+        By our probabilistic analysis, and using a polynomial time \textsc{2-Sat} algorithm \adit{cite: e.g., papadimitriou}, we see that Algorithm~\ref{alg:3color-reduce-to-2sat} runs in \(O^*\left(\left(\frac{3}{2}\right)^n\right)\) time.
+        \\
+        \\
+        We now provide an algorithm for \(k\)-coloring in general. But first, consider the following theorems.
+        \begin{theorem}{\Stop\,\,Fast Multiplication of Multivariate Polynomials}{fastpolynomialmul}
+            There exists an algorithm that multiplies polynomials \(p(x_1,\ldots,x_n)\) and \(q(x_1,\ldots,x_n)\) with degree at most \(d\) in each variable using \(O^*(2^nd)\) arithmetic operations.
+            \begin{proof}
+                The proof is by reduction to univariate polynomial multiplication and applying the fast Fourier transform.
+            \end{proof}
+        \end{theorem}
+        \begin{definition}{\Stop\,\,Independent Set Polynomial of a Graph}{independentsetpolyofgraph}
+            Define the independent set polynomial of \(G=([n],E)\) as
+            \begin{equation*}
+                p_G(x_1,\ldots,x_n)=\sum_{S\subseteq[n]}\left(\ones_{S\text{ is an independent set}}\right)\prod_{i\in S}x_i.
+            \end{equation*}
+        \end{definition}
+        \begin{theorem}{\Stop\,\,A Necessary and Sufficient Condition for \(k\)-Colorability}{kcolorableiff}
+            The graph \(G=([n],E)\) is \(k\)-colorable if and only if \(p_G(x_1,\ldots,x_n)^k\) contains the monomial \(z(x_1\cdots x_n)\) for some \(z\in\mathbb{Z}^+\).
+            \begin{proof}
+                A \(k\)-coloring of \(G\) is a partition of the vertices of \(G\) into \(k\) independent sets \(S_1,\ldots,S_k\). If \(S_1,\ldots,S_k\) corresponds to a legal \(k\)-coloring, then \(p_G(x_1,\ldots,x_k)\) contains each of the \(k\) monomials \(\prod_{i\in S_j}x_i\). So, \(p_G(x_1\ldots,x_n)^k\) contains \(x_1\cdots x_n\). On the other hand, if \(p_G(x_1,\ldots,x_n)^k\) contains \(x_1\cdots x_n\), then \(p_G\) contains \(k\) disjoint monomials corresponding to a partition of the input graph into \(k\) independent sets.
+            \end{proof}
+        \end{theorem}
+        \vphantom
+        \\
+        \\
+        The running time is \(O^*(2^n)\) to compute \(p_G\), and \(O^*(2^n)\) to compute \(p_G(x_1,\ldots,x_k)^n\). 

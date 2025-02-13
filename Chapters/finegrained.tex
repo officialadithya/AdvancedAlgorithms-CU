@@ -279,13 +279,13 @@
         \\
         \\
         We now present another result: the sparsification lemma. Morally, we can reduce solving a \(k\)-\textsc{SAT} instance with \(n\) variables to solving several \(k\)-\textsc{SAT} instances each with \(n\) variables \(O(n)\) clauses. Informally, ``every \(k\)-\textsc{SAT} formula has \(O(n)\) clauses.''
-        \begin{lemma}{\Stop\,\,The Sparsification Lemma}{sparsificationlemma}
+        \begin{theorem}{\Stop\,\,The Sparsification Lemma}{sparsificationlemma}
             Let \(\epsilon>0\) and \(k\geq3\). Then, there is a \(2^{\epsilon n}\poly(n)\)-time algorithm that takes a \(k\)-\textsc{SAT} formula \(\varphi\) on \(n\) variables as input and produces \(2^{\epsilon n}\) \(k\)-\textsc{SAT} formulas \(\varphi_1,\ldots,\varphi_{2^{\epsilon n}}\), each of which has \(n\) variables and \(n\left(\frac{k}{\epsilon}\right)^{O(k)}=O(n)\) clauses. Furthermore, \(\varphi\) is satisfiable if and only if \(\bigvee_i \varphi_i\) is satisfied.
-        \end{lemma}
+        \end{theorem}
         \vphantom
         \\
         \\
-        With the help of Lemma~\ref{lem:sparsificationlemma}, we can show that the ``strong'' exponential time hypothesis indeed implies the exponential time hypothesis.
+        With the help of Theorem~\ref{thm:sparsificationlemma}, we can show that the ``strong'' exponential time hypothesis indeed implies the exponential time hypothesis.
         \adit{TODO! HW.}
         % We called Hypothesis~\ref{hyp:SETH} the ``strong'' exponential time hypothesis. But, does Hypothesis~\ref{hyp:SETH} imply Hypothesis~\ref{hyp:ETH}, the exponential time hypothesis?
 

@@ -91,6 +91,8 @@
 \renewcommand*{\bar}[1]{\overline{#1}}
 %\renewcommand*{\vec}[1]{\mathbf{#1}}
 \newcommand*{\nin}{\notin}
+\newcommand*{\ones}{\mathbf{1}}
+\newcommand*{\zeros}{\mathbf{0}}
 \newcommand*{\nequiv}{\not\equiv}
 \newcommand*{\Span}{\text{span\,}}
 \newcommand*{\proj}{\text{proj\,}}
@@ -121,6 +123,7 @@
 \newtheorem{example}{Example}
 \newtheorem*{question*}{Question}
 \newtheorem*{answer*}{Answer}
+\newtheorem*{lemma*}{Lemma}
 \newtheorem{compprob}{Computational Problem}
 % \newtheorem*{corollary*}{Corollary}
 \newtcbtheorem[number within=section]{definition}{Definition}{
@@ -171,17 +174,17 @@
                 attach boxed title to top left={yshift=-0.1in,xshift=0.15in},
                 }{exe}
 
-\newtcbtheorem[number within=section]{lemma}{Lemma}{
-                lower separated=false,
-                breakable,
-                before skip=0.5cm,
-                colback=white,
-                colframe=black,fonttitle=\bfseries,
-                colbacktitle=black,
-                coltitle=white,
-                enhanced,
-                attach boxed title to top left={yshift=-0.1in,xshift=0.15in},
-                }{lem}
+% \newtcbtheorem[number within=section]{lemma}{Lemma}{
+%                 lower separated=false,
+%                 breakable,
+%                 before skip=0.5cm,
+%                 colback=white,
+%                 colframe=black,fonttitle=\bfseries,
+%                 colbacktitle=black,
+%                 coltitle=white,
+%                 enhanced,
+%                 attach boxed title to top left={yshift=-0.1in,xshift=0.15in},
+%                 }{lem}
 
 \newtcbtheorem[number within=section]{proposition}{Proposition}{
                 lower separated=false,

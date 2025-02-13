@@ -209,6 +209,10 @@
         \end{align*}
         Algorithm~\ref{alg:freivaldsmmv} runs in \(O(n^2)\) time. Note that Freivalds' procedure uses \(n\) random bits. Naturally, we ask how to partially derandomize while still retaining \(o\left(n^\omega\right)\) time. 
 
+\pagebreak
+
+\section{Lecture 9: February 11, 2025}
+
     \subsection{Sparse Matrix Multiplication}
 
         Another natural question is how we can do better in the case of sparse matrices. Here, we follow \cite{yuster2005fastsparse}.
@@ -223,4 +227,17 @@
         \vphantom
         \\
         \\
-        We have two critical observations that we rely on. First, let \(A,B\in\mathbb{R}^{n\times n}\) where \(A\) has columns \(a_i\) and \(B\) has rows \(b_i\). Then, \(AB=\sum_{i=1}^n a_ib_i\). Also, for any permutation \(\pi\), \(\sum_{i=1}^n a_ib_i=\sum_{i=1}^n a_{\pi(i)}b_{\pi(i)}\).
+        We have two critical observations that we rely on. First, let \(A,B\in\mathbb{R}^{n\times n}\) where \(A\) has columns \(a_i\) and \(B\) has rows \(b_i\). Then, \(AB=\sum_{i=1}^n a_ib_i\); this is an outer product characterization of matrix multiplication. Also, for any permutation \(\pi\), \(\sum_{i=1}^n a_ib_i=\sum_{i=1}^n a_{\pi(i)}b_{\pi(i)}\). We may compute this product using \(O\left(+n^2\right)\) \adit{todo}.
+        \\
+        \\
+        We present the algorithm by \cite{yuster2005fastsparse}. \adit{TODO!!!}
+        % \begin{algorithm}[H] 
+        %     \begin{algorithmic}[1]
+        %         \Procedure{Yuster Zwick\_MMV}{$A,B,C$} 
+        %             \State Sample \(x\sim\{0,1\}^n\) uniformly at random.
+        %             \State \Return \(ABx=Cx\) \Comment{Compute \(ABx\) as \(A(Bx)\)}
+        %         \EndProcedure 
+        %     \end{algorithmic}
+        %     \caption{Freivalds' \textsc{Matrix Multiplication Verification}}
+        %     \label{alg:freivaldsmmv}
+        % \end{algorithm}
