@@ -24,17 +24,24 @@
                 \item Decide: Does there exist a satisfying assignment?
             \end{itemize}
         \end{compprob}
-        \begin{hypothesis}{\Stop\,\,Exponential Time Hypothesis (ETH)}{ETH}
+        \begin{hypothesis}{\Stop\,\,\cite{impagliazzo2001ksatcomplexity} Exponential Time Hypothesis (ETH)}{ETH}
             The \(3\)-\prob{SAT} problem takes \(2^{\Omega(n)}\) time.
         \end{hypothesis}
         \begin{remark*}
             Note that \(\com{P}\neq\com{NP}\) asserts that \(3\)-\prob{SAT} has no polynomial-time algorithm, whereas ETH asserts that \(3\)-\prob{SAT} has no subexponential-time algorithm. Hence, ETH implies \(\com{P}\neq\com{NP}\).
         \end{remark*}
-        \begin{hypothesis}{\Stop\,\,Strong Exponential Time Hypothesis (SETH)}{SETH}
+        \begin{hypothesis}{\Stop\,\,\cite{impagliazzo2001ksatcomplexity,impagliazzo2001stronglyexp} Strong Exponential Time Hypothesis (SETH)}{SETH}
             For every \(\epsilon>0\), there exists \(k\in\mathbb{Z}^+\) such that there is no \(O\left(2^{(1-\epsilon)n}\right)=O((2-\epsilon)^n)\)-time algorithm for \(k\)-\prob{SAT}.
         \end{hypothesis}
         \begin{remark*}
             SETH, at a high level, claims that \(2^n\)-time is essentially optimal for \(k\)-\prob{SAT} with large \(k\).
+        \end{remark*}
+        \begin{remark*}
+            In \cite{impagliazzo2001ksatcomplexity,impagliazzo2001stronglyexp}, ETH and SETH are instead stated as follows. Let
+            \begin{equation*}
+            s_k=\inf\left\{\delta>0: \exists \text{ an algorithm to solve }k\textsc{-SAT}\text{ in }O^*\left(2^{\delta n}\right)\text{ time}\right\}.
+            \end{equation*}
+            ETH is the statement that for \(k\geq3\), \(s_k>0\). Assuming ETH, \(s_k\) is increasing infinitely often, \cite{impagliazzo2001stronglyexp}. Let \(s_\infty=\lim_{k\to\infty} s_k\). Then, SETH is the statement that \(s_\infty=1\).
         \end{remark*}
         \begin{compprob}[\(k\)-\textsc{Sum}] \label{prob:ksum}
             \vphantom
@@ -203,7 +210,7 @@
             \vphantom
             \\
             \begin{itemize}
-                \item Given two sets \(V=\{v_1,\ldots,v_n\}\subseteq[0,1]^d\) and \(W=\{w_1,\ldots,w_n\}\subseteq[0,1]^d\),
+                \item Given two sets \(V=\{v_1,\ldots,v_n\}\subseteq\{0,1\}^d\) and \(W=\{w_1,\ldots,w_n\}\subseteq\{0,1\}^d\),
                 \item Decide: Does there exist \(v_i\in W\) and \(w_j\in W\) such that \(\iprod{v_i}{w_j}=\sum_{k=1}^d v_i[k]w_j[k]=0\)?
             \end{itemize}
         \end{compprob}
@@ -257,7 +264,7 @@
     
 \section{Lecture 3: January 21, 2025}
 
-    \subsection{Graph Diameter and Smarter \(k\)-SAT}
+    \subsection{Graph Diameter}
 
         Consider the following problem.
         \begin{compprob}[Graph Diameter] \label{prob:graphdiam}
@@ -273,12 +280,15 @@
         \\
         \\
         An easy algorithm is to run Floyd-Warshall and output the largest distance found. This takes \(O(n^3)\) time.
-        \begin{theorem}{\Stop\,\,(Roddity-Vassilevska Williams) \textsc{OV} Reduction to \textsc{GraphDiameter}}{ovtographdiam}
-            The \textsc{OV} problem \((n^2,n^2)\) reduces to \textsc{GraphDiameter} on undirected, unweighted graphs with \(O(n)\) vertices and \(\tilde{O}(n)\) edges.
+        \begin{theorem}{\Stop\,\,\cite{roditty2013fast} \textsc{OV} Reduction to \textsc{GraphDiameter}}{ovtographdiam}
+            The \textsc{OV} problem \((n^2,n^2)\)-reduces to \textsc{GraphDiameter} on undirected, unweighted graphs with \(O(n)\) vertices and \(\tilde{O}(n)\) edges.
             \begin{proof}
-                Let \(v=[v_1',\ldots,v_n']\in\{0,1\}^d\) and \(w=[w_1',\ldots,w_n']\in \{0,1\}^d\)
+                Let \(V=[v_1',\ldots,v_n']\subseteq\{0,1\}^d\) and \(W=[w_1',\ldots,w_n']\subseteq\{0,1\}^d\)
             \end{proof}
         \end{theorem}
+        \begin{remark*}
+            Theorem~\ref{thm:ovtographdiam} immediately shows that assuming Hypothesis~\ref{hyp:nobetterthanquadratictimeov} or SETH, there exists no \(O\left(n^{2-\epsilon}\right)\)-time algorithm to \(\left(\frac{3}{2}-\delta\right)\)-approximate \textsc{GraphDiameter} for all \(\epsilon,\delta>0\).
+        \end{remark*}
         \adit{Finish this! I was very tired during lecture...}
 
 
