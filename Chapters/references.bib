@@ -1,16 +1,60 @@
-@inproceedings{carmosino2016nseth, author = {Carmosino, Marco L. and Gao, Jiawei and Impagliazzo, Russell and Mihajlin, Ivan and Paturi, Ramamohan and Schneider, Stefan}, title = {Nondeterministic Extensions of the Strong Exponential Time Hypothesis and Consequences for Non-reducibility}, year = {2016}, isbn = {9781450340571}, publisher = {Association for Computing Machinery}, address = {New York, NY, USA}, url = {https://doi.org/10.1145/2840728.2840746}, doi = {10.1145/2840728.2840746}, abstract = {We introduce the Nondeterministic Strong Exponential Time Hypothesis (NSETH) as a natural extension of the Strong Exponential Time Hypothesis (SETH). We show that both refuting and proving NSETH would have interesting consequences.In particular we show that disproving NSETH would give new nontrivial circuit lower bounds. On the other hand, NSETH implies non-reducibility results, i.e. the absence of (deterministic) fine-grained reductions from SAT to a number of problems. As a consequence we conclude that unless this hypothesis fails, problems such as 3-SUM, APSP and model checking of a large class of first-order graph properties cannot be shown to be SETH-hard using deterministic or zero-error probabilistic reductions.}, booktitle = {Proceedings of the 2016 ACM Conference on Innovations in Theoretical Computer Science}, pages = {261–270}, numpages = {10}, keywords = {seth, nondeterminism, fine-grained complexity, conditional lower bounds, computational complexity, all-pairs shortest path, 3-sum}, location = {Cambridge, Massachusetts, USA}, series = {ITCS '16} }
-@inproceedings{schoning1999probabilisticksat, author = {Sch\"{o}ning, Uwe}, title = {A Probabilistic Algorithm for k-SAT and Constraint Satisfaction Problems}, year = {1999}, isbn = {0769504094}, publisher = {IEEE Computer Society}, address = {USA}, abstract = {We present a simple probabilistic algorithm for solving k-SAT, and more generally, for solving constraint satisfaction problems (CSP). The algorithm follows a simple local-search paradigm: randomly guess an initial assignment and then, guided by those clauses (constraints) that are not satisfied, by successively choosing a random literal from such a clause and flipping the corresponding bit, try to find a satisfying assignment. If no satisfying assignment is found after O(n) steps, start over again. Our analysis shows that for any satisfiable k-CNF formula with n variables this process has to be repeated only t times, on the average, to find a satisfying assignment, where t is within a polynomial factor of (2(1-1/k))n. This is the fastest (and also the simplest) algorithm for 3-SAT known up to date. We consider also the more general case of a CSP with n variables, each variable taking at most d values, and constraints of order l, and analyze the complexity of the corresponding (generalized) algorithm. It turns out that any CSP can be solved with complexity about (d(1-1/l))n.}, booktitle = {Proceedings of the 40th Annual Symposium on Foundations of Computer Science}, pages = {410}, keywords = {constraint satisfaction problem, k-SAT, local-search algorithm, satisfiability}, series = {FOCS '99} }
+@inproceedings{carmosino2016nseth, 
+author = {Carmosino, Marco L. and Gao, Jiawei and Impagliazzo, Russell and Mihajlin, Ivan and Paturi, Ramamohan and Schneider, Stefan}, title = {Nondeterministic Extensions of the Strong Exponential Time Hypothesis and Consequences for Non-reducibility}, 
+year = {2016},
+isbn = {9781450340571},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA}, url = {https://doi.org/10.1145/2840728.2840746},
+doi = {10.1145/2840728.2840746},
+booktitle = {Proceedings of the 2016 ACM Conference on Innovations in Theoretical Computer Science},
+pages = {261–270},
+numpages = {10},
+keywords = {seth, nondeterminism, fine-grained complexity, conditional lower bounds, computational complexity, all-pairs shortest path, 3-sum},
+location = {Cambridge, Massachusetts, USA},
+series = {ITCS '16}
+}
+
+@inproceedings{schoning1999probabilisticksat, 
+author = {Sch\"{o}ning, Uwe},
+title = {A Probabilistic Algorithm for k-SAT and Constraint Satisfaction Problems},
+year = {1999},
+isbn = {0769504094},
+publisher = {IEEE Computer Society},
+booktitle = {Proceedings of the 40th Annual Symposium on Foundations of Computer Science},
+pages = {410},
+keywords = {constraint satisfaction problem, k-SAT, local-search algorithm, satisfiability}, 
+series = {FOCS '99}
+}
+
 @inproceedings{pan1978strassennotopt,
-  author={Pan, Victor Yakovlevich},
-  booktitle={19th Annual Symposium on Foundations of Computer Science (sfcs 1978)}, 
-  title={Strassen's algorithm is not optimal trilinear technique of aggregating, uniting and canceling for constructing fast algorithms for matrix operations}, 
-  year={1978},
-  volume={},
-  number={},
-  pages={166-176},
-  keywords={Laser sintering;Arithmetic;Matrices;Complexity theory;Linear systems;Equations;Graph theory},
-  doi={10.1109/SFCS.1978.34}}
-@article{strassen1969gaussian, author = {Strassen, Volker}, title = {Gaussian elimination is not optimal}, year = {1969}, issue_date = {August 1969}, publisher = {Springer-Verlag}, address = {Berlin, Heidelberg}, volume = {13}, number = {4}, issn = {0029-599X}, url = {https://doi.org/10.1007/BF02165411}, doi = {10.1007/BF02165411}, journal = {Numer. Math.}, month = aug, pages = {354–356}, numpages = {3} }
+author={Pan, Victor Yakovlevich},
+booktitle={19th Annual Symposium on Foundations of Computer Science (sfcs 1978)}, 
+title={Strassen's algorithm is not optimal trilinear technique of aggregating, uniting and canceling for constructing fast algorithms for matrix operations}, 
+year={1978},
+volume={},
+number={},
+pages={166-176},
+keywords={Laser sintering;Arithmetic;Matrices;Complexity theory;Linear systems;Equations;Graph theory},
+doi={10.1109/SFCS.1978.34}
+}
+
+@article{strassen1969gaussian, 
+author = {Strassen, Volker},
+title = {Gaussian elimination is not optimal},
+year = {1969},
+issue_date = {August 1969},
+publisher = {Springer-Verlag},
+address = {Berlin, Heidelberg},
+volume = {13},
+number = {4},
+issn = {0029-599X},
+url = {https://doi.org/10.1007/BF02165411},
+doi = {10.1007/BF02165411},
+journal = {Numer. Math.},
+month = aug,
+pages = {354–356}, 
+numpages = {3} 
+}
+
 @misc{williams2023new,
       title={New Bounds for Matrix Multiplication: from Alpha to Omega}, 
       author={Virginia Vassilevska Williams and Yinzhan Xu and Zixuan Xu and Renfei Zhou},
@@ -29,18 +73,21 @@
       primaryClass={cs.DS},
       url={https://arxiv.org/abs/2404.16349}, 
 }
+
 @misc{alman2021algorithms,
-      title={Algorithms for Matrix Multiplication}, 
-      author={Josh Alman},
-      year={2021},
-      url={https://www.cs.columbia.edu/~josh/algebraic-techniques-in-tcs/2021/notes/Lecture9.pdf},
+title={Algorithms for Matrix Multiplication}, 
+author={Josh Alman},
+year={2021},
+url={https://www.cs.columbia.edu/~josh/algebraic-techniques-in-tcs/2021/notes/Lecture9.pdf},
 }
+
 @inproceedings{freivalds1979mfcs,
 author = {Freivalds, Rūsiņš},
 year = {1979},
 title = {Fast probabilistic algorithms},
 journal = {MFCS},
 }
+
 @article{yuster2005fastsparse,
 author = {Yuster, Raphael and Zwick, Uri},
 title = {Fast sparse matrix multiplication},
@@ -59,4 +106,45 @@ month = jul,
 pages = {2–13},
 numpages = {12},
 keywords = {Matrix multiplication, sparse matrices}
+}
+@book{sipser2012introduction,
+  title={Introduction to the Theory of Computation},
+  author={Sipser, Michael},
+  isbn={9781133187790},
+  lccn={2012938665},
+  url={https://books.google.com/books?id=H94JzgEACAAJ},
+  year={2012},
+  publisher={Cengage Learning}
+}
+
+@book{hopcroft2001introduction,
+  title={Introduction to Automata Theory, Languages, and Computation},
+  author={Hopcroft, J.E. and Motwani, R. and Ullman, J.D.},
+  isbn={9780201441246},
+  lccn={00064608},
+  series={Addison-Wesley series in computer science},
+  url={https://books.google.com/books?id=omIPAQAAMAAJ},
+  year={2001},
+  publisher={Addison-Wesley}
+}
+
+@misc{williams2019finegrained,
+author = {Vassilevska Williams, Virginia},
+title = {On some Fine-Grained Questions in Algorithms and Complexity},
+year = {2019},
+url = {https://people.csail.mit.edu/virgi/eccentri.pdf}
+}
+
+@article{williams2005twoconstraintsat,
+title = {A new algorithm for optimal 2-constraint satisfaction and its implications},
+journal = {Theoretical Computer Science},
+volume = {348},
+number = {2},
+pages = {357-365},
+year = {2005},
+note = {Automata, Languages and Programming: Algorithms and Complexity (ICALP-A 2004)},
+issn = {0304-3975},
+doi = {https://doi.org/10.1016/j.tcs.2005.09.023},
+url = {https://www.sciencedirect.com/science/article/pii/S0304397505005438},
+author = {Ryan Williams},
 }

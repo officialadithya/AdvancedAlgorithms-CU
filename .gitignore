@@ -11,3 +11,8 @@ pdflatex1181.fls
 pdflatex925.fls
 main.bbl
 main.blg
+*.fls
+*.log
+*fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
