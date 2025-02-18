@@ -25,16 +25,16 @@
             \end{itemize}
         \end{compprob}
         \begin{hypothesis}{\Stop\,\,\cite{impagliazzo2001ksatcomplexity} Exponential Time Hypothesis (ETH)}{ETH}
-            The \(3\)-\prob{SAT} problem takes \(2^{\Omega(n)}\) time.
+            The \(3\textsc{-SAT}\) problem takes \(2^{\Omega(n)}\) time.
         \end{hypothesis}
         \begin{remark*}
-            Note that \(\com{P}\neq\com{NP}\) asserts that \(3\)-\prob{SAT} has no polynomial-time algorithm, whereas ETH asserts that \(3\)-\prob{SAT} has no subexponential-time algorithm. Hence, ETH implies \(\com{P}\neq\com{NP}\).
+            Note that \(\com{P}\neq\com{NP}\) asserts that \(3\textsc{-SAT}\) has no polynomial-time algorithm, whereas ETH asserts that \(3\textsc{-SAT}\) has no subexponential-time algorithm. Hence, ETH implies \(\com{P}\neq\com{NP}\).
         \end{remark*}
         \begin{hypothesis}{\Stop\,\,\cite{impagliazzo2001ksatcomplexity,impagliazzo2001stronglyexp} Strong Exponential Time Hypothesis (SETH)}{SETH}
-            For every \(\epsilon>0\), there exists \(k\in\mathbb{Z}^+\) such that there is no \(O\left(2^{(1-\epsilon)n}\right)=O((2-\epsilon)^n)\)-time algorithm for \(k\)-\prob{SAT}.
+            For every \(\epsilon>0\), there exists \(k\in\mathbb{Z}^+\) such that there is no \(O\left(2^{(1-\epsilon)n}\right)=O((2-\epsilon)^n)\)-time algorithm for\(3\textsc{-SAT}\)
         \end{hypothesis}
         \begin{remark*}
-            SETH, at a high level, claims that \(2^n\)-time is essentially optimal for \(k\)-\prob{SAT} with large \(k\).
+            SETH, at a high level, claims that \(2^n\)-time is essentially optimal for \(k\textsc{-SAT}\) with large \(k\).
         \end{remark*}
         \begin{remark*}
             In \cite{impagliazzo2001ksatcomplexity,impagliazzo2001stronglyexp}, ETH and SETH are instead stated as follows. Let
@@ -239,17 +239,17 @@
         \begin{theorem}{\Stop\,\,\cite{williams2005twoconstraintsat} SETH \(\implies\) OV}{sethimpliesov}
             Hypothesis~\ref{hyp:SETH} implies Hypothesis~\ref{hyp:nobetterthanquadratictimeov}.
             \begin{proof}
-                Using Definition~\ref{def:finegrainedreductions}, we can restate this theorem as follows: for every \(k\in\mathbb{Z}^+\), \(k\)-\textsc{SAT} \((2^n,n^2)\)-reduces to \textsc{OV} with \(d=\polylog(n)\). We exhibit such a reduction, which will be of exponential-time.
+                Using Definition~\ref{def:finegrainedreductions}, we can restate this theorem as follows: for every \(k\in\mathbb{Z}^+\), \(k\textsc{-SAT}\) \((2^n,n^2)\)-reduces to \textsc{OV} with \(d=\polylog(n)\). We exhibit such a reduction, which will be of exponential-time.
                 \\
                 \\
-                Let \(\varphi(x_1,\ldots,x_n)=\bigwedge_{j=1}^m C_j\) be our \(k\)-\textsc{SAT} instance, with each \(C_j\) a \(k\)-clause. Partition \(X=\{x_i\}_{i=1}^n\) into \(X_1=\{x_1,\ldots,x_{\frac{n}{2}}\}\) and \(X_2=\{x_{\frac{n}{2}+1},\ldots,x_n\}\). Consider the \(N=2^\frac{n}{2}\) assignments to each of \(X_1\) and \(X_2\) independently. Then, let \(V_1,V_2\subseteq\{0,1\}^m\). For an assignment \(a_1\) to literals in \(X_1\), \(v_{a_1}\in V_1\) is defined by
+                Let \(\varphi(x_1,\ldots,x_n)=\bigwedge_{j=1}^m C_j\) be our \(k\textsc{-SAT}\) instance, with each \(C_j\) a \(k\)-clause. Partition \(X=\{x_i\}_{i=1}^n\) into \(X_1=\{x_1,\ldots,x_{\frac{n}{2}}\}\) and \(X_2=\{x_{\frac{n}{2}+1},\ldots,x_n\}\). Consider the \(N=2^\frac{n}{2}\) assignments to each of \(X_1\) and \(X_2\) independently. Then, let \(V_1,V_2\subseteq\{0,1\}^m\). For an assignment \(a_1\) to literals in \(X_1\), \(v_{a_1}\in V_1\) is defined by
                 \begin{equation*}
                     v_{a_1}[j]=\begin{cases}
                     0 & a_1\text{ satisfies }C_j \\
                     1 & \text{otherwise}
                     \end{cases}.
                 \end{equation*}
-                Define \(v_{a_2}\in V_2\) similarly corresponding to \(a_2\) with literals in \(X_2\). We claim that \(\iprod{v_{a_i}}{v_{a_2}}=0\) if and only if \([a_1,a_2]\) is a satisfying assignment. Note that \(m=O(n^k)=O((2\log_2N)^k)=O(\log^kN)\), where \(N=2^\frac{n}{2}\). A \(O\left(N^{2-\epsilon}\right)\)-time algorithm for \textsc{OV} would then imply an \(O\left(N^{2-\epsilon}\right)=O\left(\left(2^\frac{n}{2}\right)^{2-\epsilon}\right)=O\left(2^{\left(1-\frac{\epsilon}{2}\right)n}\right)\)-time algorithm for \(k\)-\textsc{SAT}. 
+                Define \(v_{a_2}\in V_2\) similarly corresponding to \(a_2\) with literals in \(X_2\). We claim that \(\iprod{v_{a_i}}{v_{a_2}}=0\) if and only if \([a_1,a_2]\) is a satisfying assignment. Note that \(m=O(n^k)=O((2\log_2N)^k)=O(\log^kN)\), where \(N=2^\frac{n}{2}\). A \(O\left(N^{2-\epsilon}\right)\)-time algorithm for \textsc{OV} would then imply an \(O\left(N^{2-\epsilon}\right)=O\left(\left(2^\frac{n}{2}\right)^{2-\epsilon}\right)=O\left(2^{\left(1-\frac{\epsilon}{2}\right)n}\right)\)-time algorithm for \(k\textsc{-SAT}\). 
             \end{proof}
         \end{theorem}
         \begin{example}
@@ -304,12 +304,12 @@
             \varphi&=\bigwedge_{i=1}^m \left(x_i^1\vee \cdots \vee x_i^k\right) \\
             &\iff\bigwedge_{i=1}^m \left[(x_i^1\vee x_i^2\vee y_i^1)\wedge \left(\overline{y_i^1}\vee x_i^3\vee y_i^2\right)\wedge\cdots\wedge\left(\overline{y_i^{k-2}}\vee x_{k-2}\vee y_i^{k-3}\right)\wedge\left(\overline{y_i^{k-3}}\vee x_{k-1}\vee x_k\right)\right]
         \end{align*}
-        Our new \(3\)-\textsc{SAT} formula has \(n+m(k-3)\) literals and \(m(k-3)\) clauses, which is apparent from the line above.
+        Our new \(3\textsc{-SAT}\) formula has \(n+m(k-3)\) literals and \(m(k-3)\) clauses, which is apparent from the line above.
         \\
         \\
-        We also present the useful sparsification lemma. Morally, we can reduce solving a \(k\)-\textsc{SAT} instance with \(n\) variables to solving several \(k\)-\textsc{SAT} instances each with \(n\) variables \(O(n)\) clauses. Informally, ``every \(k\)-\textsc{SAT} formula has \(O(n)\) clauses.''
+        We also present the useful sparsification lemma. Morally, we can reduce solving a \(k\textsc{-SAT}\) instance with \(n\) variables to solving several \(k\textsc{-SAT}\) instances each with \(n\) variables \(O(n)\) clauses. Informally, ``every \(k\textsc{-SAT}\) formula has \(O(n)\) clauses.''
         \begin{theorem}{\Stop\,\,The Sparsification Lemma}{sparsificationlemma}
-            Let \(\epsilon>0\) and \(k\geq3\). Then, there is a \(2^{\epsilon n}\poly(n)\)-time algorithm that takes a \(k\)-\textsc{SAT} formula \(\varphi\) on \(n\) variables as input and produces \(2^{\epsilon n}\) \(k\)-\textsc{SAT} formulas \(\varphi_1,\ldots,\varphi_{2^{\epsilon n}}\), each of which has \(n\) variables and \(n\left(\frac{k}{\epsilon}\right)^{O(k)}=O(n)\) clauses. Furthermore, \(\varphi\) is satisfiable if and only if \(\bigvee_i \varphi_i\) is satisfied.
+            Let \(\epsilon>0\) and \(k\geq3\). Then, there is a \(2^{\epsilon n}\poly(n)\)-time algorithm that takes a \(k\textsc{-SAT}\) formula \(\varphi\) on \(n\) variables as input and produces \(2^{\epsilon n}\) \(k\textsc{-SAT}\) formulas \(\varphi_1,\ldots,\varphi_{2^{\epsilon n}}\), each of which has \(n\) variables and \(n\left(\frac{k}{\epsilon}\right)^{O(k)}=O(n)\) clauses. Furthermore, \(\varphi\) is satisfiable if and only if \(\bigvee_i \varphi_i\) is satisfied.
         \end{theorem}
         \vphantom
         \\
@@ -369,7 +369,7 @@
         \vphantom
         \\
         \\
-        Local search algorithms for \(3\)-\textsc{SAT} turn out to be very powerful. We proceed, following \cite{schoning1999probabilisticksat,spielman2007satlecture}. Here, we harness the power of randomness.
+        Local search algorithms for \(3\textsc{-SAT}\) turn out to be very powerful. We proceed, following \cite{schoning1999probabilisticksat,spielman2007satlecture}. Here, we harness the power of randomness.
         \begin{algorithm}[H] 
             \begin{algorithmic}[1]
                 \Procedure{Sch\"oning\_SAT\_Framework}{$\varphi,\beta_n$} 
@@ -477,7 +477,7 @@
         \\
         Herein, we reference \cite{carmosino2016nseth}. Recall that \(k\textsc{-SAT}\in\com{NP}\).
         \begin{question*}
-            Can we say anything about verifying that a \(k\)\textsc{-SAT} formula is unsatisfiable?
+            Can we say anything about verifying that a \(k\textsc{-SAT}\) formula is unsatisfiable?
         \end{question*}
         \begin{hypothesis}{\Stop\,\,NSETH}{nseth}
             For every \(\epsilon>0\), there exists \(k\) with \(\bar{k\textsc{-SAT}}\nin\NTIME\left(2^{(1-\epsilon)n}\right)\).
