@@ -299,31 +299,83 @@
 
     \subsection{Smarter \(k\)-SAT, Part I}
 
-        [Monien-Speckenmeyer, 1985]
-
-        We've shown a \(O(1.913^n)\) algorithm for \(3\)-SAT. Can we do better? Yes, we can! Consider a clause \(C=x_1\vee x_2\vee x_2\). Note that
+        In this section, we detail faster algorithms for solving \(3\textsc{-SAT}\). But first, we recall some standard facts; \(2\textsc{-SAT}\) is in \(\com{P}\) and \(k\textsc{-SAT}\) is \(\com{NP}\)-complete for \(k\geq3\). The brute force algorithm takes \(O(2^n)\) time. Now, we show how to convert \(\varphi\), a \(k\textsc{-SAT}\) formula with \(n\) variables and \(m\) clauses, into a \(3\)-\textsc{SAT} formula. Write
+        \begin{align*}
+            \varphi&=\bigwedge_{i=1}^m \left(x_i^1\vee \cdots \vee x_i^k\right) \\
+            &\iff\bigwedge_{i=1}^m \left[(x_i^1\vee x_i^2\vee y_i^1)\wedge \left(\overline{y_i^1}\vee x_i^3\vee y_i^2\right)\wedge\cdots\wedge\left(\overline{y_i^{k-2}}\vee x_{k-2}\vee y_i^{k-3}\right)\wedge\left(\overline{y_i^{k-3}}\vee x_{k-1}\vee x_k\right)\right]
+        \end{align*}
+        Our new \(3\)-\textsc{SAT} formula has \(n+m(k-3)\) literals and \(m(k-3)\) clauses, which is apparent from the line above.
+        \\
+        \\
+        We also present the useful sparsification lemma. Morally, we can reduce solving a \(k\)-\textsc{SAT} instance with \(n\) variables to solving several \(k\)-\textsc{SAT} instances each with \(n\) variables \(O(n)\) clauses. Informally, ``every \(k\)-\textsc{SAT} formula has \(O(n)\) clauses.''
+        \begin{theorem}{\Stop\,\,The Sparsification Lemma}{sparsificationlemma}
+            Let \(\epsilon>0\) and \(k\geq3\). Then, there is a \(2^{\epsilon n}\poly(n)\)-time algorithm that takes a \(k\)-\textsc{SAT} formula \(\varphi\) on \(n\) variables as input and produces \(2^{\epsilon n}\) \(k\)-\textsc{SAT} formulas \(\varphi_1,\ldots,\varphi_{2^{\epsilon n}}\), each of which has \(n\) variables and \(n\left(\frac{k}{\epsilon}\right)^{O(k)}=O(n)\) clauses. Furthermore, \(\varphi\) is satisfiable if and only if \(\bigvee_i \varphi_i\) is satisfied.
+        \end{theorem}
+        \vphantom
+        \\
+        \\
+        With the help of Theorem~\ref{thm:sparsificationlemma}, we can show that the ``strong'' exponential time hypothesis indeed implies the exponential time hypothesis. The proof follows by contraposition, first applying the sparsification lemma to the \(k\textsc{-SAT}\) formula, and then converting each \(\varphi_i\) into a \(3\textsc{-SAT}\) formula. Indeed, SETH implies ETH.
+        \\
+        \\
+        Now, we tackle \(3\textsc{-SAT}\) itself. A very simple, but clever optimization gives us a \(O(1.913^n)\)-time algorithm. Let \(\varphi;\vec{a}\) denote a partial assignment to \(\varphi\) according to \(\vec{a}\).
+        \begin{algorithm}[H] 
+            \begin{algorithmic}[1]
+                \Procedure{3-SAT-Easy-Recursive}{$\varphi$} 
+                    \If{\(\varphi\) only has \(1\) and \(2\)-clauses} \Return \Call{2-SAT}{$\varphi$} \Comment{in \(\poly(n)\) time}
+                    \EndIf
+                    \State \(C\gets \ell_1\vee\ell_2\vee \ell_3\)
+                    \For{each of \(7\) partial satisfying partial assignments \(\vec{a}_C\) to \(C\)}
+                        \State \Return \Call{3-SAT-Easy-Recursive}{$\varphi;\vec{a}_C$}
+                    \EndFor
+                    \State \Return \(\var{false}\)
+                \EndProcedure 
+            \end{algorithmic}
+            \caption{\(3\textsc{-SAT}\) Easy Recursive Algorithm; \(O(1.913^n)\)}
+            \label{alg:3-sat-easy-recursive}
+        \end{algorithm}
+        \vphantom
+        \\
+        \\
+        Algorithm~\ref{alg:3-sat-easy-recursive} takes time
+        \begin{align*}
+            T(n)&=7T(n-3)+\poly(n) \\
+            &=7^{\frac{n}{3}}\poly(n)=2^{\frac{\log_2 7}{3}}\poly(n)=O(1.913),
+        \end{align*}
+        as desired.
+        \begin{question*}
+            Can we do better?
+        \end{question*}
+        \begin{answer*}
+            Yes, we can!
+        \end{answer*}
+        \vphantom
+        \\
+        \\
+        To improve, we take the approach of \cite{monien1985satisfiability}. Consider a clause \(C=x_1\vee x_2\vee x_2\). Note that
         \begin{equation*}
             C=x_1\vee x_2\vee x_2\iff x_1\vee(\neg x_1\wedge x_2)\vee(\neg x_1\wedge \neg x_2\wedge x_3).
         \end{equation*}
-        We can think of the above formula as either setting the truth of one, two, or three literals. This gives rise to a modification of the previous recursive algorithm, making \(3\) recursive calls. This gives us the recurrence \(T(n)=T(n-1)+T(n-2)+T(n-3)+\poly(n)=O^*(\alpha^n)\) where \(\alpha\) is the unique real root to \(\alpha^n-\alpha^{n-1}-\alpha^{n-2}-\alpha^{n-3}=0\), or equivalently, \(\alpha^3-\alpha^2-\alpha-1\). Here, \(\alpha\leq 1.84\). So, \(T(n)=(1.84^n)\).
+        We can think of the above formula as either setting the truth of one, two, or three literals. This gives rise to a modification of Algorithm~\ref{alg:3-sat-easy-recursive}, making \(3\) recursive calls. This gives us the recurrence
+        \begin{align*}
+            T(n)=T(n-1)+T(n-2)+T(n-3)+\poly(n)=O^*(\alpha^n)
+        \end{align*}
+        where \(\alpha\) is the unique real root to \(\alpha^n-\alpha^{n-1}-\alpha^{n-2}-\alpha^{n-3}=0\), or equivalently, \(\alpha^3-\alpha^2-\alpha-1\). Here, \(\alpha\leq 1.84\). So, \(T(n)=(1.84^n)\).
+        \begin{question*}
+            Can we do better?
+        \end{question*}
+        \begin{answer*}
+            Yes, we can!
+        \end{answer*}
+        \vphantom
         \\
         \\
-        We now show how to reduce \(k\)-\textsc{SAT} to \(k-1\)-\textsc{SAT} where \(k\geq4\). Take the \(k\)-\textsc{SAT} formula
-        \begin{equation*}
-            \varphi=\bigwedge_{j=1}^m C_j.
-        \end{equation*}
-        We will map each clause \(C_j\) in \(\varphi\) to the conjunction of a \(k-1\)-clause, and a \(3\)-clause. We'll introduce a new variable \(y\) each time. Say
-        \begin{equation*}
-            C_j=(x_1^j,\ldots,x_k^j)\mapsto (x_1^j,\ldots,x_{k-2}^j\vee y)\wedge (\neg y\vee x_{k-1}^j\vee x_k^j).
-        \end{equation*}
-        Now, we consider local search algorithms for \(3\)-\textsc{SAT} [Spielman's Notes, \cite{schoning1999probabilisticksat}]. Here, we harness the power of randomness.
+        Local search algorithms for \(3\)-\textsc{SAT} turn out to be very powerful. We proceed, following \cite{schoning1999probabilisticksat,spielman2007satlecture}. Here, we harness the power of randomness.
         \begin{algorithm}[H] 
             \begin{algorithmic}[1]
                 \Procedure{Sch\"oning\_SAT\_Framework}{$\varphi,\beta_n$} 
                     \State Guess a uniformly random assignment to \(\vec{a}\in\{0,1\}^n\) to \(\varphi\).
                     \For{\(j\in\{1,\ldots,\beta_n\}\)}
-                        \If{\(\varphi\) is satisfied by \(\vec{a}\)}
-                            \State \Return \(\vec{a}\)
+                        \If{\(\varphi\) is satisfied by \(\vec{a}\)} \Return \(\vec{a}\)
                         \Else
                             \State Choose an unsatisfied clause \(C\) in \(\varphi\), and choose a variable \(x_i\) in \(C\) uniformly at random.
                             \State Flip the assignment \(a_i\) to \(x_i\) in \(\vec{a}\).
@@ -342,30 +394,19 @@
         \\
         \\
         Importantly, how do we choose \(\beta_n\)? Suppose that the initial assignment \(\vec{a}\) agrees with the satisfying assignment \(\vec{a}^*\) on a ``decent'' fraction of coordinates with ``decent'' probability. The steps in the loop can be thought of as doing a random walk on \(\{0,1\}^n\). At each step, \(\vec{a}\) gets closer to \(\vec{a}^*\) with probability at least \(\frac{1}{3}\) since at least one variable in each unsatisfied clause differs between \(\vec{a}\) and \(\vec{a}^*\). 
+        \pagebreak
+        \vphantom
         \\
         \\
-        For ``Easy''-Sch\"oning, take \(\beta_n=n\). Say \(u\) is the number of coordinates in which \(\vec{a}\) and \(\vec{a}^*\) disagree. Then,
+        For ``Easy''-Sch\"oning, take \(\beta_n=n\). Say \(u\) is the number of coordinates in which \(\vec{a}\) and \(\vec{a}^*\) are different. Then, the probability of Algorithm~\ref{alg:schoningsat} finding a satisfying assignment is given by
         \begin{align*}
-            \Pr[\text{success}]&\geq \sum_{i=0}^n \Pr[u=i]\Pr[\text{first }i\text{ choices match}] \\
+            \Pr[\text{satisfying assignment found}]&\geq \sum_{i=0}^n \Pr[u=i]\Pr[\text{first }i\text{ choices match}] \\
             &=\sum_{i=0}^n \frac{1}{2^n}\binom{n}{i}\Pr[\text{first }i\text{ choices match}] \\
             &\geq\frac{1}{2^n}\sum_{i=0}^n\binom{n}{i}\frac{1}{3^i} \\
             &=\frac{1}{2^n}\left(1+\frac{1}{3}\right)^n \\
             &=\left(\frac{2}{3}\right)^n.
         \end{align*}
-        Intuitively, we sample a random assignment \(\vec{a}\) which disagrees in \(i\) coordinates from \(\vec{a}^*\). We want to keep flipping assigments so that \(\vec{a}=\vec{a}^*\). The algorithm succeeds with probability at least \(\left(\frac{2}{3}\right)^n\). So, we can repeat Algorithm~\ref{alg:schoningsat} roughly \(\left(\frac{3}{2}\right)^n\) with \(\beta=n\) times to find a solution with high probability.
-        \adit{FINISH THIS! (and undertsnad this fully!)}
-        \\
-        \\
-        We now present another result: the sparsification lemma. Morally, we can reduce solving a \(k\)-\textsc{SAT} instance with \(n\) variables to solving several \(k\)-\textsc{SAT} instances each with \(n\) variables \(O(n)\) clauses. Informally, ``every \(k\)-\textsc{SAT} formula has \(O(n)\) clauses.''
-        \begin{theorem}{\Stop\,\,The Sparsification Lemma}{sparsificationlemma}
-            Let \(\epsilon>0\) and \(k\geq3\). Then, there is a \(2^{\epsilon n}\poly(n)\)-time algorithm that takes a \(k\)-\textsc{SAT} formula \(\varphi\) on \(n\) variables as input and produces \(2^{\epsilon n}\) \(k\)-\textsc{SAT} formulas \(\varphi_1,\ldots,\varphi_{2^{\epsilon n}}\), each of which has \(n\) variables and \(n\left(\frac{k}{\epsilon}\right)^{O(k)}=O(n)\) clauses. Furthermore, \(\varphi\) is satisfiable if and only if \(\bigvee_i \varphi_i\) is satisfied.
-        \end{theorem}
-        \vphantom
-        \\
-        \\
-        With the help of Theorem~\ref{thm:sparsificationlemma}, we can show that the ``strong'' exponential time hypothesis indeed implies the exponential time hypothesis.
-        \adit{TODO! HW.}
-        % We called Hypothesis~\ref{hyp:SETH} the ``strong'' exponential time hypothesis. But, does Hypothesis~\ref{hyp:SETH} imply Hypothesis~\ref{hyp:ETH}, the exponential time hypothesis?
+        Intuitively, we sample a random assignment \(\vec{a}\) which differs from \(\vec{a}^*\) in \(i\) coordinates. We want to keep flipping assigments so that \(\vec{a}=\vec{a}^*\). The above procedure succeeds with probability at least \(\left(\frac{2}{3}\right)^n\). So, we can repeat Algorithm~\ref{alg:schoningsat} roughly \(\left(\frac{3}{2}\right)^n\) times with \(\beta_n=n\) to find a solution with high probability.
 
 \pagebreak
 
@@ -373,10 +414,10 @@
 
     \subsection{Smarter \(k\)-SAT, Part II}
 
-        Now, what if we apply the framework behind Algorithm~\ref{alg:schoningsat} with \(\beta_n=3n\)? Let's analyze the probability that 
+        To get an even better runtime, we can refine the procedure described in the previous section. What if we apply Algorithm~\ref{alg:schoningsat} with \(\beta_n=3n\)? Let's analyze the probability that 
         \begin{enumerate}
-            \item the initial assignment \(\vec{a}\) disagrees with \(\vec{a}^*\) on exactly \(i\) coordinates, and
-            \item the first \(3i\) steps of the walk include at least \(2i\) ``good'' choices.
+            \item the initial assignment \(\vec{a}\) differs with \(\vec{a}^*\) on exactly \(i\) coordinates, and
+            \item the first \(3i\) steps of the walk include at least \(2i\) choices satisfying all clauses.
         \end{enumerate}
         For (1), the analysis is very similar to ``Easy''-Sch\"oning. First, recall that for \(i\geq 2\),
         \begin{equation*}
@@ -384,20 +425,19 @@
         \end{equation*}
         by Stirling's approximation. Then,
         \begin{align*}
-            \Pr[\text{at least }2i\text{ of the first }3i\text{ choices are good}]&\geq\binom{3i}{i}\left(\frac{1}{3}\right)^{2i}\left(\frac{2}{3}\right)^i \\
-            &\geq \frac{1}{\sqrt{3i}}\frac{3^{3i}}{2^{2i}}  \left(\frac{1}{3}\right)^{2i}\left(\frac{2}{3}\right)^i
+            \Pr[\text{at least }2i\text{ of the first }3i\text{ choices satisfy all clauses}]&\geq\binom{3i}{i}\left(\frac{1}{3}\right)^{2i}\left(\frac{2}{3}\right)^i\geq \frac{1}{\sqrt{5i}}\frac{3^{3i}}{2^{2i}}  \left(\frac{1}{3}\right)^{2i}\left(\frac{2}{3}\right)^i.
         \end{align*}
         Then,
         \begin{align*}
-            \Pr[\text{success}]&\geq \sum_{i=0}^n\Pr[u=i]\Pr[\text{at least }2i\text{ of the first }3i\text{ choices are good}] \\
+            \Pr[\text{satisfying assignment found}]&\geq \sum_{i=0}^n\Pr[u=i]\Pr[\text{at least }2i\text{ of the first }3i\text{ choices satisfy all clauses}] \\
             &\geq \frac{1}{2^n}\sum_{i=0}^n \binom{n}{i}\binom{3i}{i}  \left(\frac{1}{3}\right)^{2i}\left(\frac{2}{3}\right)^i \\
-            &\geq \frac{1}{2^n}\sum_{i=0}^n \binom{n}{i}\frac{1}{\sqrt{3i}}\frac{3^{3i}}{2^{2i}}  \left(\frac{1}{3}\right)^{2i}\left(\frac{2}{3}\right)^i \\
-            &\geq \frac{1}{2^n\sqrt{5n}}\sum_{i=0}^n\binom{n}{i}\frac{1}{\sqrt{3i}}\frac{3^{3i}}{2^{2i}}  \left(\frac{1}{3}\right)^{2i}\left(\frac{2}{3}\right)^i \\
+            &\geq \frac{1}{2^n}\sum_{i=0}^n \binom{n}{i}\frac{1}{\sqrt{5i}}\frac{3^{3i}}{2^{2i}}  \left(\frac{1}{3}\right)^{2i}\left(\frac{2}{3}\right)^i \\
+            &\geq \frac{1}{2^n\sqrt{5n}}\sum_{i=0}^n\binom{n}{i}\frac{1}{\sqrt{5i}}\frac{3^{3i}}{2^{2i}}  \left(\frac{1}{3}\right)^{2i}\left(\frac{2}{3}\right)^i \\
             &=\frac{1}{2^n\sqrt{5n}}\sum_{i=0}^n\binom{n}{i}\frac{1}{2^i} \\
             &=\frac{1}{2^n\sqrt{5n}}\left(1+\frac{1}{2}\right)^n \\
             &=\frac{1}{\sqrt{5n}}\left(\frac{3}{4}\right)^n.
         \end{align*}
-        Proceeding similarly, we can run Algorithm~\ref{alg:schoningsat} roughly \(O^*\left(\frac{4}{3}\right)^n\) times with \(\beta=3n\) times to find a solution with high probability.
+        Proceeding similarly, we can run Algorithm~\ref{alg:schoningsat} roughly \(O^*\left(\frac{4}{3}\right)^n\) times with \(\beta=3n\) to find a solution with high probability.
         \begin{question*}
             Is this optimal?
         \end{question*}
@@ -405,6 +445,7 @@
             No! But, we'll end here.
         \end{answer*}
 
+\pagebreak
         
 \section{Lecture 6: January 30, 2025}
 
