@@ -2,10 +2,10 @@
 
     \subsection{Introduction to Fine-Grained Complexity}
     
-        We hope to precisely understand the complexity of several algorithmic problems beyond the coarse information given by standard complexity classes, like \(\com{P}\) and \(\com{NP}\). A central theme is proving lower bounds for the complexity of algorithms; this is a difficult task in general. We use reductions as an essential tool.
+        We hope to precisely understand the complexity of several algorithmic problems beyond the coarse information given by standard complexity classes like \(\com{P}\) and \(\com{NP}\). A central theme is proving lower bounds for the complexity of algorithms; this is a difficult task in general. Here, reductions are an essential tool.
         \\
         \\
-        The high-level idea behind fine-grained complexity is to explain hardness, or the lack of algorithmic progress, on fundamental computational problems by giving reductions from well-studied problems. Recall the \(\com{P}\) v. \(\com{NP}\) problem. Loosely, problems in \(\com{P}\) are ``easy,'' to solve, and problems in \(\com{NP}\) are ``easy'' to verify positive answers to. The hardest problems in \(\com{NP}\), the \(\com{NP}\)-complete problems do not admit polynomial-time algorithms unless \(\com{P}=\com{NP}\). To show that a problem is \(\com{NP}\)-complete, we show that it is in \(\com{NP}\), and exhibit a polynomial-time reduction from a known \(\com{NP}\)-complete problem. 
+        The high-level idea behind fine-grained complexity is to explain hardness, or the lack of algorithmic progress, on fundamental computational problems by giving reductions from well-studied problems. Recall the \(\com{P}\) v. \(\com{NP}\) problem. Loosely, problems in \(\com{P}\) are ``easy,'' to solve, and problems in \(\com{NP}\) are ``easy'' to verify positive answers to. The hardest problems in \(\com{NP}\), the \(\com{NP}\)-complete problems, do not admit polynomial-time algorithms unless \(\com{P}=\com{NP}\). To show that a problem is \(\com{NP}\)-complete, we show that it is in \(\com{NP}\), and exhibit a polynomial-time reduction from a known \(\com{NP}\)-complete problem. We assume familiarity with the technical definitions and implications, and defer the reader to \cite{hopcroft2001introduction,sipser2012introduction} for details.
         \\
         \\
         The theory behind \(\com{NP}\)-completeness is robust and quite nice. But, we'd like finer results. Knowing whether a problem is in \(\com{P}\) or not doesn't really narrow down how efficiently we can solve it in practice. Even quadratic-time algorithms may be inefficient in production.
@@ -28,13 +28,13 @@
             The \(3\)-\prob{SAT} problem takes \(2^{\Omega(n)}\) time.
         \end{hypothesis}
         \begin{remark*}
-            Note that \(\com{P}\neq\com{NP}\) asserts that \(3\)-\prob{SAT} has no polynomial-time algorithm, whereas ETH asserts that \(3\)-\prob{SAT} has no subexponential-time algorithm. ETH implies \(\com{P}\neq\com{NP}\).
+            Note that \(\com{P}\neq\com{NP}\) asserts that \(3\)-\prob{SAT} has no polynomial-time algorithm, whereas ETH asserts that \(3\)-\prob{SAT} has no subexponential-time algorithm. Hence, ETH implies \(\com{P}\neq\com{NP}\).
         \end{remark*}
         \begin{hypothesis}{\Stop\,\,Strong Exponential Time Hypothesis (SETH)}{SETH}
             For every \(\epsilon>0\), there exists \(k\in\mathbb{Z}^+\) such that there is no \(O\left(2^{(1-\epsilon)n}\right)=O((2-\epsilon)^n)\)-time algorithm for \(k\)-\prob{SAT}.
         \end{hypothesis}
         \begin{remark*}
-            SETH, at a high level, claims that \(2^n\)-time is essentially optimal for \(k\)-\prob{SAT} for large \(k\).
+            SETH, at a high level, claims that \(2^n\)-time is essentially optimal for \(k\)-\prob{SAT} with large \(k\).
         \end{remark*}
         \begin{compprob}[\(k\)-\textsc{Sum}] \label{prob:ksum}
             \vphantom
@@ -48,7 +48,66 @@
         \vphantom
         \\
         \\
-        Naively, we can solve \(k\)-\textsc{Sum} by trying all possible choices \(a_i\) and checking the sum. This can be done in \(O(n^k)\) time. We can do better. For now, let \(k=3\). We start by computing all possible sums \(a_1+a_2\). Then, define \(S=\{a_1+a_2:a_1\in A_1,a_2\in A_2\}\). Sort \(A_3\). For each \(s\in S\), search in \(A_3\) for \(-s\). If \(-s\) is found, there exists a solution. Otherwise, there is no solution. This provides an \(O(n^2\log n)\) algorithm; computing the sums takes \(O(n^2)\) time, sorting takes \(O(n\log n)\) time, and the search procedure takes \(O(n^2\log n)\) time. 
+        A naive algorithm for \(k\textsc{-Sum}\) is to try all possible choices \(a_i\) and verify the sum. This gives rise to an \(O(n^k)\)-time algorithm.
+        \begin{question*}
+            Can we do better?
+        \end{question*}
+        \begin{answer*}
+            Yes, we can!
+        \end{answer*} 
+        \vphantom
+        \\
+        \\
+        For now, let \(k=3\). Consider the following, slightly better, algorithm.
+        \begin{algorithm}[H] 
+            \begin{algorithmic}[1]
+                \Procedure{3-Sum-Better}{$A_1,A_2,A_3$} 
+                    \State \(S\gets \{a_1+a_2:a_1\in A,a_2\in A_2\}\) \Comment{\(O(n^2)\)}
+                    \State Sort \(A_3\). \Comment{\(O(n\log n)\)}
+                    \For{\(s\in S\)} \Comment{\(O(n^2\log n)\)}
+                        \If{\(-s\in A_3\)} \Return \(\var{true}\) 
+                        \EndIf
+                    \EndFor
+                    \State \Return \(\var{false}\)
+                \EndProcedure 
+            \end{algorithmic}
+            \caption{Better \(3\textsc{-Sum}\)}
+            \label{alg:better-3-sum}
+        \end{algorithm}
+        \vphantom
+        \\
+        \\
+        Algorithm~\ref{alg:better-3-sum} takes \(O(n^2\log n)\) time, using binary search on the sorted array \(A_3\).
+        \pagebreak
+        \begin{question*}
+            Can we do better?
+        \end{question*}
+        \begin{answer*}
+            Yes, we can!
+        \end{answer*} 
+        \vphantom
+        \\
+        \\
+        Our first example of a helpful reduction is as follows. Given a \(3\textsc{-Sum}\) instance with arrays of length \(n\), we can construct \(n\) \(2\textsc{-Sum}\) instances. This procedure gives us an \(O(n^2)\) algorithm for \(3\textsc{-Sum}\), which we describe in Algorithm~\ref{alg:best-3-sum}.
+        \begin{algorithm}[H] 
+            \begin{algorithmic}[1]
+                \Procedure{3-Sum-Better}{$A_1,A_2,A_3$} 
+                    \State Sort \(A_1\) and \(A_2\).
+                    \For{\(a_3\in A_3\)}
+                        \State \(A_2+a_3\gets [a_{2,1}+a_3,\ldots,a_{2,n}+a_3]\) 
+                        \If{\Call{2-Sum}{$A_1,A_2+a_3$}} \Return \(\var{true}\)
+                        \EndIf
+                    \EndFor
+                    \State \Return \(\var{false}\)
+                \EndProcedure 
+            \end{algorithmic}
+            \caption{Best \(3\textsc{-Sum}\)}
+            \label{alg:best-3-sum}
+        \end{algorithm}
+        \vphantom
+        \\
+        \\
+        Sorting takes \(O(n\log n)\) time. Then, we can \(n\) calls of \(2\textsc{-Sum}\) that each take \(O(n)\) time since the arrays are sorted. Therefore, Algorithm~\ref{alg:best-3-sum} runs in \(O(n^2)\) time. We have the following hypothesis.
         \begin{hypothesis}{\Stop\,\,No \(O(n^{2-\epsilon})\)-Time Algorithm for \(3\)-\textsc{Sum}}{nobetterthanquadratictime3sum}
             For every \(\epsilon>0\), there is no \(O\left(n^{2-\epsilon}\right)\)-time algorithm for \(3\)-\textsc{Sum}.
         \end{hypothesis}
