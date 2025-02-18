@@ -25,7 +25,8 @@ for i, _ in enumerate(lines):
     title["def"] = "\\textsc{Definition}"
     title["thm"] = "\\textsc{Theorem}"
     title["pro"] = "\\textsc{Proposition}"
-    title["cor"] = "\\textsc{Corollary}"
+    # title["cor"] = "\\textsc{Corollary}"
+    title["hyp"] = "\\textsc{Hypothesis}"
     
     reference = lines[i][lines[i].find("{")+1:lines[i].find("}")]
     header = title[reference[0:reference.find(":")]]

@@ -460,7 +460,7 @@
 
         Consider the following definition.
         \begin{definition}{\Stop\,\,NTIME}{ntime}
-            A language \(L\subseteq\{0,1\}^n\) is in \(\NTIME(f_n)\) if there exists an algorithm \(M\) such that for \(x\in\{0,1\}^*\) with \(|x|=n\), \(M\) runs in time \(f(n)\) and
+            A language \(L\subseteq\{0,1\}^*\) is in \(\NTIME(f(n))\) if there exists an algorithm \(M\) such that for \(x\in\{0,1\}^*\) with \(|x|=n\), \(M\) runs in time \(O(f(n))\) and
             \begin{enumerate}
                 \item if \(x\in L\), then there exists \(w\in\{0,1\}^*\) with \(M(x,w)\) accepting, and
                 \item if \(x\nin L\), for all \(w\in\{0,1\}^*\), \(M(x,w)\) is rejecting.
@@ -494,9 +494,10 @@
             \item \(\bar{3\textsc{-Sum}}\) and \(\bar{\textsc{APSP}}\) do have nontrivial nondeterministic algorithms, and
             \item assuming (1), (2) and NSETH, there is no fine-grained reduction from \(k\textsc{-SAT}\) to \(3\textsc{-Sum}\) or \(\textsc{APSP}\), as opposed to the \(k\textsc{-SAT}\) to \(\textsc{OV}\) reduction.
         \end{enumerate}
-        
         \pagebreak
-
+        \vphantom
+        \\
+        \\
         Consider the following theorem.
         \begin{theorem}{\Stop\,\,\cite{carmosino2016nseth} Nondeterministically Solving \(\bar{3\textsc{-Sum}}\) in \(\tilde{O}(n^{\frac{3}{2}})\) Time}{n1.5nondetalgforbar3sum}
             There is a \(\tilde{O}\left(n^{\frac{3}{2}}\right)\)-time nondeterministic algorithm for \(\bar{3\textsc{-Sum}}\).
@@ -507,7 +508,7 @@
                     \item \(S=\{(i,j,k):a_i+a_j+a_j\equiv0\pmod{p}\}\), and
                     \item \(t\in\mathbb{Z}\cap[0,3cn^{1.5}\log n]\) such that \(t=|S|\).
                 \end{enumerate}
-                We wish to show that such a witness exists. Let \(R\) be the set of all pairs \(((i,j,k),p)\) where \(p\) is a prime which is at most the \(n^{1.5\textsc{th}}\) prime number and \(a_i+a_j+a_k\equiv0\pmod{p}\). Then, \(|R|\leq n^3\log(3n^c)\leq 3cn^3\log n\). There are \(n^3\) triples \((i,j,k)\), and \(3n^c\) gives an upper bound on the magnitude of \(a_i+a_j+a_k\), and the logarithm is an upper bound on the number of prime factors of this quantity. Now, by an averaging argument, there must exist \(p_0\) which is at most the \(n^{1.5\textsc{th}}\) prime number such that the number of pairs \(((i,j,k),p_0)\) is at most \(\frac{|R|}{n^{1.5}}\leq 3cn^{1.5}\log n\). We now show verification given input \(A\). First, check that for all \(r\in\{1,\ldots,t\}\),
+                We wish to show that such a witness exists. Let \(R\) be the set of all pairs \(((i,j,k),p)\) where \(p\) is a prime which is at most the \(n^{1.5\textsc{th}}\) prime number and \(a_i+a_j+a_k\equiv0\pmod{p}\). Then, \(|R|\leq n^3\log(3n^c)\leq 3cn^3\log n\). There are \(n^3\) triples \((i,j,k)\), and \(3n^c\) gives an upper bound on the magnitude of \(a_i+a_j+a_k\). The logarithm is an upper bound on the number of prime factors of this quantity. Now, by an averaging argument, there must exist \(p_0\) which is at most the \(n^{1.5\textsc{th}}\) prime number such that the number of pairs \(((i,j,k),p_0)\) is at most \(\frac{|R|}{n^{1.5}}\leq 3cn^{1.5}\log n\). We now show verification given input \(A\). First, check that for all \(r\in\{1,\ldots,t\}\),
                 \begin{equation*}
                     a_{ir}+a_{jr}+a_{kr}\equiv0\pmod{p},\quad a_{ir}+a_{jr}+a_{kr}\neq0.
                 \end{equation*}
@@ -515,7 +516,7 @@
                 \begin{equation*}
                     A=[a_1,\ldots,a_n]\mapsto q_A(x)=\sum_{i}x^{a_i\bmod p}
                 \end{equation*}
-                and use the fast Fourier transform to compute \((q_A(x))^3\). If \(b_j\) is the coefficient of \(x^j\) in \((q_A(x))^3\), \(b_3\) is the number of triples in \(\{a_1\bmod p,\ldots,a_n\bmod p\}\) summing to \(j\). Now, since \(\deg (q_A(x))^3\leq 3(p-1)<3p\), we can just check
+                and use the fast Fourier transform to compute \((q_A(x))^3\). If \(b_j\) is the coefficient of \(x^j\) in \((q_A(x))^3\), \(b_3\) is the number of triples in \(\{a_1\bmod p,\ldots,a_n\bmod p\}\) summing to \(j\). Now, since \(\deg (q_A(x))^3\leq 3(p-1)<3p\), and hence is nonzero for \(j\in\{0,\ldots,3(p-1)\}\), we can just check
                 \begin{equation*}
                     b_0+b_{p}+b_{2p}=t,
                 \end{equation*}
