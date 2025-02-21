@@ -2,7 +2,13 @@
 
     \subsection{Graph Coloring}
 
-        We introduce the graph coloring problem.
+        We introduce the notion of coloring a graph and the associated graph coloring problem. 
+        \begin{definition}{\Stop\,\,\(k\)-Coloring of a Graph}{kcoloringgraph}
+            Let \(G=(V,E)\) be an unweighted and undirected graph. A \(k\)-coloring of \(G\) is a function \(c:V\to\{1,\ldots,k\}\). We say \(c\) is admissible if \(c(u)\neq c(v)\) whenever \((u,v)\in E\).
+        \end{definition}
+        \begin{definition}{\Stop\,\,Chromatic Number of a Graph}{chromaticnumber}
+            Let \(G=(V,E)\) be an unweighted and undirected graph. The chromatic number \(\chi(G)\) of \(G\) is the minimum \(k\) such that \(G\) has an admissible \(k\)-coloring.
+        \end{definition}
         \begin{compprob}[\textsc{Graph \(k\)-Coloring}] \label{prob:graphcolor}
             \vphantom
             \\
@@ -11,10 +17,29 @@
                 \item Decide: Does there exist an admissible \(k\)-coloring of \(G\)?
             \end{itemize}
         \end{compprob}
+        \begin{remark*}
+            It is easy to see that any admissible \(k\)-coloring of \(G\) immediately partitions \(G\) into \(k\) independent sets, one for each color class.
+        \end{remark*}
         \vphantom
         \\
         \\
-        For now, take \(k=3\). Note that \(k=2\) corresponds to deciding whether the given graph is bipartite, easily done in polynomial time. There are several algorithms for determining whether \(G\) is \(3\)-colorable. We describe certain techniques at a high level below.
+        Note that \(k=2\) corresponds to determining whether the given graph is bipartite, easily done in polynomial time. For \(k\geq 3\), \textsc{Graph \(k\)-Coloring} is \(\com{NP}\)-complete. We follow the exposition of \cite{feige2011colorlecture} to describe fast \(k\)-coloring algorithms. Often, we'll take \(k=3\) and refer to ``colors'' \(c(V)\) as \(\{\textsc{Red}, \textsc{Green}, \textsc{Blue}\}\).
+        \\
+        \\
+        There are \(k^n\) \(k\)-colorings of \(G\). The naive algorithm is to check all of them in \(O^*(k^n)\) time for admissiblity.
+        \begin{question*}
+            Can we do better?
+        \end{question*}
+        \begin{answer*}
+            Yes, we can!
+        \end{answer*}
+        \vphantom
+        \\
+        \\
+        For our first improvement, we'll observe that a tree with \(n\) vertices has \(k(k-1)^{n-1}\) admissible \(k\)-colorings. Hence, we may, in polynomial time, find a spanning tree of our graph \(G\), and then check \(k(k-1)^{n-1}\) admissible \(k\)-colorings of the spanning tree for admissiblity in \(G\). This gives rise to an \(O^*((k-1)^n)\)-time algorithm. 
+        \\
+        \\
+        Our first nontrivial algorithm for \(3\)-coloring is given in Algorithm~\ref{alg:3color-reduce-to-2color}. We reduce \(3\)-coloring to \(2\)-coloring.
         \begin{algorithm}[H] 
             \begin{algorithmic}[1]
                 \Require \(G=(V,E)\).
@@ -31,25 +56,24 @@
         \vphantom
         \\
         \\
-        The running time of Algorithm~\ref{alg:3color-reduce-to-2color} is 
-        \begin{equation*}
-            \left(\sum_{i=1}^{\binom{n}{3}} \binom{n}{i}\right)\poly(n).
-        \end{equation*}
-        Then, we analyze the highest term and see that \adit{...}
-        \begin{equation*}
-            \binom{n}{\frac{n}{3}}=
-        \end{equation*}
+        We can think of \(R\subseteq V\) as a possible \textsc{Red} color class. The smallest color class must have size at most \(\frac{n}{3}\). Then, we can attempt to color the remaining edges with \textsc{Green} and \textsc{Blue}. We must check \(\sum_{i=1}^{\binom{n}{3}} \binom{n}{i}\) sets. Therefore, the running time of Algorithm~\ref{alg:3color-reduce-to-2color} is 
+        \begin{align*}
+            \left(\sum_{i=1}^{\binom{n}{3}} \binom{n}{i}\right)\poly(n)&\leq \binom{n}{\frac{n}{3}}\poly(n) \\
+            &=\frac{n!}{\left(\frac{n}{3}\right)!\left(\frac{2n}{3}\right)!}\poly(n) \\
+            &\approx 3^{\frac{n}{3}}\left(\frac{3}{2}\right)^\frac{2n}{3}\poly(n)=O^*\left(\left(\frac{27}{4}\right)^\frac{n}{3}\right)=O(1.89^n).
+        \end{align*}
+        Another approach is to reduce \(3\)-coloring to \(2\textsc{-SAT}\), illustrated in Algorithm~\ref{alg:3color-reduce-to-2sat}.
         \begin{algorithm}[H] 
             \begin{algorithmic}[1]
                 \Require \(G=(V,E)\).
-                \Procedure{3-Color-Reduction-2-Sat}{$G$} 
+                \Procedure{3-Color-Reduction-2-SAT}{$G$} 
                     \For{\(v\in V\)}
                         \State Repeatedly randomly choose an assignment \(\ell(v)\) of two colors to \(v\)
                     \EndFor
-                    \State Find a \(3\)-coloring respecting \(\ell(v_1),\ldots,\ell(v_n)\) by a reduction to \(\textsc{2-Sat}\).
+                    \State Find a \(3\)-coloring respecting \(\ell(v_1),\ldots,\ell(v_n)\) by a reduction to \(\textsc{2-SAT}\).
                 \EndProcedure 
             \end{algorithmic}
-            \caption{3-Coloring via a Reduction to 2-Coloring}
+            \caption{3-Coloring via a Reduction to 2-SAT}
             \label{alg:3color-reduce-to-2sat}
         \end{algorithm}
         \vphantom
@@ -94,3 +118,129 @@
         \\
         \\
         The running time is \(O^*(2^n)\) to compute \(p_G\), and \(O^*(2^n)\) to compute \(p_G(x_1,\ldots,x_k)^n\). 
+
+\pagebreak
+
+    \section{Lecture 11: February 19, 2025}
+
+        \subsection{Approximate Graph Coloring}
+
+        Consider the following problem.
+        \begin{compprob}[\textsc{Graph \(k\)-Coloring, Relax}] \label{prob:graphcolorrelax}
+            \vphantom
+            \\
+            \begin{itemize}
+                \item Given a unweighted and undirected graph \(G=(V,E)\) and \(k\in\mathbb{Z}^+\) such that \(G\) is \(k\)-colorable,
+                \item Find: the smallest \(k'(n)\) such that finding an admissible \(k'(n)\)-coloring takes \(\poly(n)\) time.
+            \end{itemize}
+        \end{compprob}
+        \vphantom
+        \\
+        \\
+        Again, we focus on \(k=3\). Note trivially, that we can pick \(k'(n)=n\). We give a better algorithm, due to \cite{johnson1974worst}.
+        \begin{algorithm}[H] 
+            \begin{algorithmic}[1]
+                \Require \(G=(V,E)\) is \(3\)-Colorable
+                \Procedure{3-Color-Relax}{$G$} 
+                    \State Choose \(S\subseteq V\) with \(|S|=\log n\).
+                    \State Check all \(3^{|S|}\) possible colorings of \(G_{|S}\) for admissibility.
+                    \State Color \(S\) according to an admissible coloring with \(3\) new colors, and recuse on \(G_{|V\backslash S}\).
+                \EndProcedure 
+            \end{algorithmic}
+            \caption{Coloring in Polynomial Time with \(O\left(\frac{n}{\log n}\right)\) Colors, \cite{johnson1974worst}}
+            \label{alg:3color-relax}
+        \end{algorithm}
+        \vphantom
+        \\
+        \\
+        We recurse \(\frac{n}{\log n}\) times, and use \(3\) new colors each time. Now, we present Wigderson's algorithm, \cite{wigderson1983improving}.
+        \begin{algorithm}[H] 
+            \begin{algorithmic}[1]
+                \Require \(G=(V,E)\) is \(3\)-Colorable.
+                \Procedure{3-Color-Relax-Wigderson}{$G$} 
+                    \While{\(\exists v\in V, \deg(v)\geq\sqrt{n}\) where \(v\) is not colored}
+                        \State Color \(v\) with a new color. \Comment{Observe that the neighborhood \(N(v)\) of \(v\) is \(2\)-colorable.}
+                        \State Color \(N(v)\) with two new colors.
+                    \EndWhile
+                    \State Color the remaining vertices using \(\sqrt{n}\) new colors.
+                \EndProcedure 
+            \end{algorithmic}
+            \caption{Coloring in Polynomial Time with \(O(\sqrt{n})\) Colors, \cite{wigderson1983improving}}
+            \label{alg:3color-relax-wigderson}
+        \end{algorithm}
+        \vphantom
+        \\
+        \\
+        A key observation in Algorithm~\ref{alg:3color-relax-wigderson} is that we can color a graph \(G\) with maximum degree \(d\) with at most \(d+1\) colors in polynomial time. Each vertex \(v\) has at most \(d\) neighbors, so even if they are all colored with different colors, we can pick a \(d+1\)th color for \(v\). Therefore, Algorithm~\ref{alg:3color-relax-wigderson}.
+        \\
+        \\
+        In each iteration of the while loop, we use \(3\) colors and color \(\sqrt{n}\) vertices. For the low-degree vertices, we use \(\sqrt{n}\) colors. So, in sum, we use \(3\sqrt{n}+\sqrt{n}=O(\sqrt{n})\) colors.
+        \\
+        \\
+        We'll return to the relaxation of graph coloring presented, but first, we'll start an interlude on constraint satisfaction problems.
+
+\pagebreak
+
+    \subsection{Interlude on Constraint Satisfaction Problems}
+
+        Consider the following definition.
+        \begin{definition}{\Stop\,\,Constraint Satisfaction Problems (CSPs)}{csps}
+            A \(k\)-ary constraint satisfaction problem (\(k\)-CSP) consists of
+            \begin{enumerate}
+                \item \(n\) variables \(x_1,\ldots,x_n\),
+                \item a finite universe \(U\) of values that the variables can take,
+                \item a family \(C\) of constraints which are functions \(f:U^k\to\{0,1\}\).
+            \end{enumerate}
+            An instance of a \(k\)-CSP \(C\) consists of \(m\) constraints
+            \begin{equation*}
+                f_1(x_{i,1},\ldots, x_{i,k}),\ldots, f_m(x_{m,1},\ldots, x_{m,k}).
+            \end{equation*}
+            We hope to find an assignment \(x_i=a_i\) for \(a_1,\ldots,a_n\in V\) satisfying all \(m\) constraints.
+        \end{definition}
+        \vphantom
+        \\
+        \\
+        We provide some examples.
+        \begin{example}[\(3\textsc{-SAT}\) as a CSP]
+            We have that \(3\textsc{-SAT}\) is a \(3\)-CSP with \(U=\{0,1\}\) and constraints are disjunctions of three literals.
+        \end{example}
+        \begin{example}[\(3\textsc{-Coloring}\) as a CSP]
+            We have that \(3\textsc{-Coloring}\) is a \(2\)-CSP with \(U=\{1,2,3\}\) and variables corresponding to colors assigned to vertices. The constraints correspond to edges and are of the form \(f(x_i,x_j)=1\) if \(x_i\neq x_j\) and \(f(x_i,x_j)=0\) if \(x_i=x_j\).
+        \end{example}
+        \begin{compprob}[\textsc{MaxCut}] \label{prob:maxcut}
+            \vphantom
+            \\
+            \begin{itemize}
+                \item Given a unweighted and undirected graph \(G=(V,E)\),
+                \item Find: \(V_1\) and \(V_2\) with \(V_1\sqcup V_2=V\) such that \(|\{(u,v): u\in V_1,v\in V_2\}|\) is maximized.
+            \end{itemize}
+        \end{compprob}
+        \begin{example}[\textsc{MaxCut} as a CSP]
+            We have that \(\textsc{MaxCut}\) is a \(2\)-CSP with \(U=\{0,1\}\) and variables corresponding to an assignment of vertices to \(V_1\) or \(V_2\). The constraints correspond to edges and are of the form \(f(x_i,x_j)=1\) if \(x_i\neq x_j\) and \(f(x_i,x_j)=0\) if \(x_i=x_j\).
+        \end{example}
+        \begin{remark*}
+            Note that if we wish to satisfy \(\ell\) constraints, taking \(\ell=m\) gives \(\com{NP}\)-completeness for the CSPs corresponding to \(3\textsc{-SAT}\) and \(3\textsc{-Coloring}\), but \(\ell=m\) for the \(\textsc{MaxCut}\) CSP is simply \(2\textsc{-Coloring}\), which is in \(\com{P}\).
+        \end{remark*}
+        \begin{remark*}
+            The optimization form of a CSP hopes to satisfy as many constraints as is possible. Suppose \(\OPT\leq m\) is the maximal number of satisfied constraints, then, we call an \(\alpha\)-approximate solution satisfying at least \(\alpha\OPT\) clauses.
+        \end{remark*}
+        \pagebreak
+        \begin{theorem}{\Stop\,\,Randomized Approximation Algorithms for CSPs}{randomizedapproxcsps}
+            A random assignment of variables satisfies \(p_0m\) constraints in a CSP \(C\) in expectation where
+            \begin{equation*}
+                p_0=\min_{f\in C}\Pr_{(a_1,\ldots,a_k)\sim U^k}[f(a_1,\ldots,a_k)=1].
+            \end{equation*}
+            \begin{proof}
+                Define an indicator random variable \(\ones_i\) to be \(1\) if \(f_i\) is satisfied and \(0\) otherwise. Then,
+                \begin{align*}
+                    \mathbb{E}[|f:f(x)=1|]&=\mathbb{E}\sum_{i=1}^m[\ones_i] \\
+                    &=\sum_{i=1}^m\mathbb{E}[\ones_i] \\
+                    &\geq \sum_{i=1}^m p_0 \\
+                    &=p_0m,
+                \end{align*}
+                as desired.
+            \end{proof}
+        \end{theorem}
+        \begin{remark*}
+            For \(3\textsc{-SAT}\), random assignment gives a \(\frac{7}{8}\)-approximation algorithm, and it is known that \(\left(\frac{7}{8}-\epsilon\right)\) is \(\com{NP}\)-complete. For \textsc{MaxCut}, random assignment gives a \(\frac{1}{2}\) approximation algorithm, 
+        \end{remark*}
