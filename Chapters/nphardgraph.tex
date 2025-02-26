@@ -212,11 +212,11 @@
             \\
             \begin{itemize}
                 \item Given a unweighted and undirected graph \(G=(V,E)\),
-                \item Find: \(V_1\) and \(V_2\) with \(V_1\sqcup V_2=V\) such that \(|\{(u,v): u\in V_1,v\in V_2\}|\) is maximized.
+                \item Find: \(V^-\) and \(V^+\) with \(V^-\sqcup V^+=V\) such that \(|\{(u,v): u\in V^-,v\in V^+\}|\) is maximized.
             \end{itemize}
         \end{compprob}
         \begin{example}[\textsc{MaxCut} as a CSP]
-            We have that \(\textsc{MaxCut}\) is a \(2\)-CSP with \(U=\{0,1\}\) and variables corresponding to an assignment of vertices to \(V_1\) or \(V_2\). The constraints correspond to edges and are of the form \(f(x_i,x_j)=1\) if \(x_i\neq x_j\) and \(f(x_i,x_j)=0\) if \(x_i=x_j\).
+            We have that \(\textsc{MaxCut}\) is a \(2\)-CSP with \(U=\{0,1\}\) and variables corresponding to an assignment of vertices to \(V^-\) or \(V^+\). The constraints correspond to edges and are of the form \(f(x_i,x_j)=1\) if \(x_i\neq x_j\) and \(f(x_i,x_j)=0\) if \(x_i=x_j\).
         \end{example}
         \begin{remark*}
             Note that if we wish to satisfy \(\ell\) constraints, taking \(\ell=m\) gives \(\com{NP}\)-completeness for the CSPs corresponding to \(3\textsc{-SAT}\) and \(3\textsc{-Coloring}\), but \(\ell=m\) for the \(\textsc{MaxCut}\) CSP is simply \(2\textsc{-Coloring}\), which is in \(\com{P}\).
@@ -242,7 +242,7 @@
             \end{proof}
         \end{theorem}
         \begin{remark*}
-            For \(3\textsc{-SAT}\), random assignment gives a \(\frac{7}{8}\)-approximation algorithm, and it is known that \(\left(\frac{7}{8}-\epsilon\right)\) is \(\com{NP}\)-complete. For \textsc{MaxCut}, random assignment gives a \(\frac{1}{2}\) approximation algorithm, 
+            For \(3\textsc{-SAT}\), random assignment gives a \(\frac{7}{8}\)-approximation algorithm, and it is known that \(\left(\frac{7}{8}+\epsilon\right)\) is \(\com{NP}\)-complete. For \textsc{MaxCut}, random assignment gives a \(\frac{1}{2}\) approximation algorithm, 
         \end{remark*}
         \begin{question*}
             Can we do better?
@@ -250,3 +250,117 @@
         \begin{answer*}
             In some cases, yes, we can!
         \end{answer*}
+
+\pagebreak
+
+\section{Lecture 12: February 25, 2025}
+
+    \subsection{Semidefinite Programming and Approximation}
+
+        In this section, we present the results of \cite{goemans1995improvedmaxcut} for \textsc{MaxCut} and discuss relations to graph coloring. We follow the exposition of \cite{williamson2011design}. We use the technique of semidefinite programming. Recall the following definition from linear algebra.
+        \begin{definition}{\Stop\,\,Positive Semidefinite Matrices}{possemidef}
+            Let \(X\in\mathbb{R}^{n\times n}\). We say \(X\) is positive semidefinite if all eigenvalues of \(X\) are nonnegative. If \(X\) is positive semidefinite, we write \(X\succeq\zeros\). The set of symmetric matrices is denoted \(\mathbf{S}^n\subseteq \mathbb{R}^{n\times n}\).
+        \end{definition}
+        \begin{remark*}
+            Equivalently, \(X\in\mathbb{R}^{n\times n}\) is positive semidefinite if and only if 
+            \begin{enumerate}
+                \item for all \(\vec{v}\in\mathbb{R}^n\), \(\vec{y}^\top X\vec{y}\geq0\), or 
+                \item \(X=V^\top V\) for some \(V\in\mathbb{R}^{n\times n}\).
+            \end{enumerate}
+        \end{remark*}
+        \begin{definition}{\Stop\,\,Semidefinite Programs}{sdps}
+            A semidefinite program (SDP) is an optimization problem that can be written as
+            \begin{align*}
+                \max_{X\in \mathbf{S}^n} &\iprod{C}{X} \quad \\
+                \textsf{s.t. }&AX=b, \\
+                &X \succeq\zeros.
+            \end{align*}
+            where \(C\in \mathbf{S}^n\) and the inner product is \(\iprod{C}{X}=\trace(C^\top X)\).
+        \end{definition}
+        \begin{remark*}
+            Semidefinite programs are just like linear programs, though in addition to having a linear objective and affine constraints, we also require that the matrix \(X\) of variables \(x_{i,j}\) is positive semidefinite.
+        \end{remark*}
+        \begin{theorem}{\Stop\,\,Solving SDPs}{solvingsdps}
+            Given some technical conditions, we can solve SDPs to within additive error \(\epsilon>0\) in \(\poly\left(\log\left(\frac{1}{\epsilon}\right),n\right)\) time.
+        \end{theorem}
+        \begin{remark*}
+            We'll just say that SDPs can be solved exactly in polynomial time, since this is the ``moral'' claim of Theorem~\ref{thm:solvingsdps}.
+        \end{remark*}
+        \vphantom
+        \\
+        \\
+        Throughout, we will work with vector programs, those of the form
+        \begin{align*}
+            \max&\sum_{i,j}c_{i,j}\iprod{\vec{v}_i}{\vec{v}_j} \\
+            \textsf{s.t. }&\sum_{i,j}a_{i,j,k}\iprod{\vec{v}_i}{\vec{v}_j}=b_k,\quad \forall k \\
+            &\vec{v}_i\in\mathbb{R}^n.
+        \end{align*}
+        The above vector program is equivalent to the SDP
+        \begin{align*}
+            \max&\sum_{i,j}c_{i,j}x_{i,j} \\
+            \textsf{s.t. }&\sum_{i,j}a_{i,j,k}x_{i,j}=b_k,\quad \forall k \\
+            &x_{i,j}=x_{j,i},\quad \forall i,j \\
+            &X=(x_{i,j})\succeq\zeros.
+        \end{align*}
+        This can be seen by establishing a correspondence between \(x_{i,j}\) in the SDP to the inner product \(\iprod{\vec{v}_i}{\vec{v}_j}\) in the vector program.
+        \begin{itemize}
+            \item Given a solution \(X\) to the SDP, we can turn it into a solution \(V\) to the vector program by computing \(V=[\vec{v}_1,\ldots,\vec{v}_n]\) such that \(X=V^\top V\).
+            \item Given a solution \(V\) to the vector program, we can turn it into a solution \(X=V^\top V\) to the SDP.
+        \end{itemize}
+        Before we move to \textsc{MaxCut}, we define quadratic programs.
+        \begin{definition}{\Stop\,\,Quadratic Programs}{qps}
+            A quadratic program (QP) is an optimization problem that can be written as
+            \begin{align*}
+                \max_{\vec{x}\in\mathbb{R}^n} &\frac{1}{2}\vec{x}^\top Q\vec{x}+\vec{c}^\top\vec{x} \quad \\
+                \textsf{s.t. }&A\vec{x}\leq\vec{b}.
+            \end{align*}
+        \end{definition}
+        \vphantom
+        \\
+        \\
+        We can formulate \textsc{MaxCut} as a quadratic program. Given a graph \(G=(V,E)\), we have the problem
+        \begin{align*}
+            \max\frac{1}{2}&\sum_{(i,j)\in E}(1-y_iy_j) \\
+            \textsf{s.t. }&y_i\in\{-1,1\}, \quad i\in\{1,\ldots,n\}.
+        \end{align*}
+        Consider the following vector program relaxation to the \textsc{MaxCut} QP. We have
+        \begin{align*}
+            \max\frac{1}{2}&\sum_{(i,j)\in E}(1-\iprod{\vec{v}_i}{\vec{v}_j}) \\
+            \textsf{s.t. }&\iprod{\vec{v}_i}{\vec{v}_j}=1, \quad i\in\{1,\ldots,n\}, \\
+            &\vec{v}_i\in\mathbb{R}^n, \quad i\in\{1,\ldots,n\}.
+        \end{align*}
+        Any feasible solution \(\vec{y}\) to the QP can be turned into a feasible solution \(\vec{v}_1,\ldots,\vec{v}_n\in\mathbb{R}^n\) to the vector program with the same objective value; consider \(y_i\mapsto \vec{v}_i=[y_i,0,\ldots,0]^\top\). If \(\OPT\) is optimal for the QP, and hence \textsc{MaxCut}, and \(Z_{\mathsf{VP}}\) is optimal for the vector problem, then \(\OPT\leq Z_{\mathsf{VP}}\).
+        \begin{remark*}
+            We can think of the vector program as the \(n\)-dimensional relaxation of the \(1\)-dimensional QP. 
+        \end{remark*}
+        \vphantom
+        \\
+        \\
+        We wish to obtain a \(\{-1,1\}\) assignment to vertices of \(G\). We use a ``randomized rounding'' technique. We give the Geomans-Williamson algorithm in Algorithm~\ref{alg:geomans-williamson}.
+        \begin{algorithm}[H] 
+            \begin{algorithmic}[1]
+                \Procedure{GoemansWilliamson}{$G$} 
+                    \State \(V^-\gets \emptyset\)
+                    \State \(V^+\gets \emptyset\)
+                    \State Solve the vector program relaxation of the \textsc{MaxCut} QP for \(V=[\vec{v}_1,\ldots,\vec{v}_n]\).
+                    \State Sample \(\vec{r}\sim\{\vec{x}\in\mathbb{R}^n:||\vec{x}||_2=1\}\) uniformly at random.
+                    \For{\(i\in\{1,\ldots,n\}\)}
+                        \If{\(\iprod{\vec{v}_i}{\vec{r}}\leq0\)}
+                            \State \(V^-\gets V^-\cup\{i\}\)
+                        \Else 
+                            \State \(V^+\gets V^+\cup\{i\}\)
+                        \EndIf
+                    \EndFor
+                    \State \Return \((V^-,V^+)\)
+                \EndProcedure 
+            \end{algorithmic}
+            \caption{Goemans-Williamson Approximation Algorithm for \textsc{MaxCut}}
+            \label{alg:geomans-williamson}
+        \end{algorithm}
+        \vphantom
+        \\
+        \\
+        The inner product \(\iprod{\vec{v}_i}{\vec{v}_j}\) for \(i\neq j\) corresponds to the angle formed by \(\vec{v}_i\) and \(\vec{v}_j\), and therefore to the chance that the corresponding edge \((i,j)\) is cut. Then,
+        \begin{align*}
+            \Pr[(i,j)\text{ is a cut edge}]=\Pr[\proj_{\Span\{\vec{v}_i,\vec{v}_j\}}\vec{r}]
+        \end{align*}
