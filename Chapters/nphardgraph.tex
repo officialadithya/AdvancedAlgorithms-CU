@@ -255,7 +255,7 @@
 
 \section{Lecture 12: February 25, 2025}
 
-    \subsection{Semidefinite Programming and Approximation}
+    \subsection{Semidefinite Programming and Geomans-Williamson}
 
         In this section, we present the results of \cite{goemans1995improvedmaxcut} for \textsc{MaxCut} and discuss relations to graph coloring. We follow the exposition of \cite{williamson2011design}. We use the technique of semidefinite programming. Recall the following definition from linear algebra.
         \begin{definition}{\Stop\,\,Positive Semidefinite Matrices}{possemidef}
@@ -362,5 +362,116 @@
         \\
         The inner product \(\iprod{\vec{v}_i}{\vec{v}_j}\) for \(i\neq j\) corresponds to the angle formed by \(\vec{v}_i\) and \(\vec{v}_j\), and therefore to the chance that the corresponding edge \((i,j)\) is cut. Then,
         \begin{align*}
-            \Pr[(i,j)\text{ is a cut edge}]=\Pr[\proj_{\Span\{\vec{v}_i,\vec{v}_j\}}\vec{r}]
+            \Pr[(i,j)\text{ is a cut edge}]&=\Pr[\proj_{\Span\{\vec{v}_i,\vec{v}_j\}}\vec{r}\text{ is }] \\
+            &=\frac{2\theta}{2\pi}=\frac{\theta}{\pi}=\frac{\arccos(\iprod{\vec{v}_i}{\vec{v}_j})}{\pi}.
         \end{align*}
+        Consider the following theorems.
+        \begin{theorem}{\Stop\,\,The Geomans-Williamson Algorithm is an Approximation to \textsc{MaxCut}}{goemansapproxalg}
+            The Geomans-Williamson Algorithm~\ref{alg:geomans-williamson} is an \(\alpha\)-approximation algorithm for \textsc{MaxCut} where
+            \begin{equation*}
+                \alpha=\inf_{x\in[-1,1]}\left(\frac{\arccos x}{\pi}\frac{2}{1-x}\right)\geq0.87857.
+            \end{equation*}
+            \begin{proof}
+                Let
+                \begin{equation*}
+                    X_{i,j}=\begin{cases}
+                        1 & (i,j)\text{ is a cut edge} \\
+                        0 & \text{otherwise}
+                    \end{cases}.
+                \end{equation*}
+                Then,
+                \begin{align*}
+                    \mathbb{E}[\text{number of cut edges}]=\mathbb{E}\left[\sum_{(i,j)\in E} X_{i,j}\right]&=\sum_{(i,j)\in E}\mathbb{E}[X_{i,j}] \\
+                    &=\sum_{(i,j)\in E} \frac{\arccos(\iprod{\vec{v}_i}{\vec{v}_j})}{\pi} \\
+                    &\geq \sum_{(i,j)\in E} \frac{\alpha}{2}(1-\iprod{\vec{v}_i}{\vec{v}_j}) \\
+                    &=\alpha\sum_{(i,j)\in E} \frac{1}{2}(1-\iprod{\vec{v}_i}{\vec{v}_j}) \\
+                    &=\alpha Z_{\mathsf{VP}}\geq \alpha\OPT,
+                \end{align*}
+                where \(Z_{\mathsf{VP}}\) and \(\OPT\) are the optimal vector program and quadratic program objectives for \textsc{MaxCut}, as desired. The calculation of \(\alpha\) is straightforward.
+            \end{proof}
+        \end{theorem}
+        \begin{theorem}{\Stop\,\,Optimality of the Geomans-Williamson Algorithm}{optimalityofgeomanswilliamson}
+            There is no \(\alpha\)-approximation algorithm for \textsc{MaxCut}
+            \begin{enumerate}
+                \item for \(\alpha>\frac{16}{17}\) assuming that \(\com{P}\neq\com{NP}\),
+                \item for \(\alpha>\inf_{x\in[-1,1]}\left(\frac{\arccos x}{\pi}\frac{2}{1-x}\right)\) assuming that \(\com{P}\neq\com{NP}\) and the unique games conjecture, \cite{khot2002uniquegames}, is true.
+            \end{enumerate}
+        \end{theorem}
+
+\pagebreak
+
+\section{Lecture 13: February 27, 2025}
+
+    \subsection{Semidefinite Programming and Graph Coloring}
+
+        In this section, we use SDPs for graph coloring. Suppose we have a \(3\)-colorable graph \(G=(V,E)\). Consider the vector program
+        \begin{align*}
+            \min\,&\lambda \tag{\(\star\)}\\
+            \textsf{s.t. }&\iprod{\vec{v}_i}{\vec{v}_j}\leq\lambda\quad \forall (i,j)\in E, \\
+            &\iprod{\vec{v}_i}{\vec{v}_i}=1 \quad \forall i\in\{1,\ldots,n\}, \\
+            &\vec{v}_i\in\mathbb{R}^n \quad \forall i\in\{1,\ldots,n\}.
+        \end{align*}
+        \begin{lemma*}
+            If \(G\) is \(3\)-colorable, then the vector program in \((\star)\) always has a solution with \(\lambda\leq-\frac{1}{2}\). 
+            \begin{proof}
+                Observe that \(\iprod{\vec{v}_i}{\vec{v}_j}\leq-\frac{1}{2}\) if and only if \(\theta\geq\frac{2\pi}{3}\). Since \(G\) is \(3\)-colorable, we can set all \(\vec{v}_i\) to one of three vectors, say \(\vec{v}_\textsc{R}\), \(\vec{v}_\textsc{G}\), and \(\vec{v}_\textsc{B}\) such that no two adjacent \(\vec{v}_i\) and \(\vec{v}_j\) are assigned the same vector. Hence, for \((i,j)\in E\), \(\vec{v}_i\) and \(\vec{v}_j\) are given different colors. So,
+                \begin{equation*}
+                    \iprod{\vec{v}_i}{\vec{v}_j}=\cos\left(\frac{2\pi}{3}\right)=-\frac{1}{2}.
+                \end{equation*}
+                We've exhibited a feasible solution of \(-\frac{1}{2}\), so \(\lambda\leq -\frac{1}{2}\), as desired.
+            \end{proof}
+        \end{lemma*}
+        \vphantom
+        \\
+        \\
+        Consider the following definition.
+        \begin{definition}{\Stop\,\,\(k\)-Semicoloring of a Graph}{graphsemicoloring}
+            A \(k\)-semicoloring of an unweighted and undirected graph \(G=(V,E)\) is a \(k\)-coloring such that at most \(\frac{n}{4}\) edges have endpoints with the same color.
+        \end{definition}
+        \begin{remark*}
+            The existence of a semicoloring of \(G\) implies the existence of a subgraph induced by at least \(\frac{n}{2}\) vertices that is admissibly colored.
+        \end{remark*}
+        \begin{lemma*}
+            Given a polynomial time algorithm \(\mathcal{A}\) for semicoloring a \(3\)-colorable graph with \(O(k)\) colors, there exists a polynomial-time algorithm \(\mathcal{A}'\) to admissibly color \(G\) with \(O(k\log n)\) colors.
+            \begin{proof}
+                The algorithm \(\mathcal{A}'\) is given as follows. We run \(\mathcal{A}\) on \(G\) and recurse on the subgraph induced by at most \(\frac{n}{2}\) vertices that are adjacent to a vertex with the same color. Coloring the subgraph requires at most \(k\) new colors.
+            \end{proof}
+        \end{lemma*}
+        \vphantom
+        \\
+        \\
+        Using the randomized rounding technique, similar to Geomans-Williamson, we provide an algorithm for semicoloring. Let \(\Delta=\max_{v\in G}\deg v\).
+        \begin{algorithm}[H] 
+            \begin{algorithmic}[1]
+                \Procedure{GraphSemicoloring}{$G$} 
+                    \State Solve, for \(\vec{v}_1,\ldots,\vec{v}_n\),
+                    \begin{align*}
+                        \min\,&\lambda \tag{\(\star\)}\\
+                        \textsf{s.t. }&\iprod{\vec{v}_i}{\vec{v}_j}\leq\lambda\quad \forall (i,j)\in E, \\
+                        &\iprod{\vec{v}_i}{\vec{v}_i}=1 \quad \forall i\in\{1,\ldots,n\}, \\
+                        &\vec{v}_i\in\mathbb{R}^n \quad \forall i\in\{1,\ldots,n\}.
+                    \end{align*}
+                    \State \(t\gets \left\lceil \log_3\Delta+2\right\rceil\)
+                    \State Sample \(\vec{r}_1,\ldots,\vec{r}_t\sim\{\vec{x}\in\mathbb{R}^n:||\vec{x}||_2=1\}\)
+                    \For{\(i\in\{1,\ldots,n\}\)}
+                        \State Color \(\vec{v}_i\) with \([\sgn(\iprod{\vec{v}_i}{\vec{r}_1}),\ldots,\sgn(\iprod{\vec{v}_i}{\vec{r}_t})]\in\{-1,1\}^t\) \Comment{Uses at most \(2^t\) colors.}
+                    \EndFor
+                \EndProcedure 
+            \end{algorithmic}
+            \caption{Graph Semicoloring}
+            \label{alg:graph-semicoloring}
+        \end{algorithm}
+        \begin{lemma*}
+            Algorithm~\ref{alg:graph-semicoloring} gives a semicoloring of \(G\) using at most \(8\Delta^{\log_32}\) colors with probability at least \(\frac{1}{2}\).
+            \begin{proof}
+                We used at most \(2^t\leq 2^{\log_3\Delta+3}=8\Delta^{\log_32}\) colors. Then,
+                \begin{align*}
+                    \Pr[\vec{v}_i\text{ and }\vec{v}_j\text{ have the same color}]&=\prod_{k=1}^t \left(1-\frac{1}{\pi}\arccos(\iprod{\vec{v}_i}{\vec{v}_j})\right). \\
+                    &=\left(1-\frac{1}{\pi}\arccos(\iprod{\vec{v}_i}{\vec{v}_j})\right)^t \\
+                    &\leq \left(1-\frac{1}{\pi}\arccos\left(-\frac{1}{2}\right)\right)^t \\
+                    &=\left(1-\frac{2}{3}\right)^t \\
+                    &=\frac{1}{3^{\log_3\Delta+2}}=\frac{1}{9\Delta},
+                \end{align*}
+                as desired.
+            \end{proof}
+        \end{lemma*}
