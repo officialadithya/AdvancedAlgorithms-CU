@@ -1,0 +1,33 @@
+\section{Lecture 14: March 4, 2025}
+
+    \subsection{Introduction to Metric Embeddings}
+
+        Recall the following definitions of metrics and metric spaces; we defer unfamilar readers to \cite{rudin1976principles,lang1997analysis}.
+        \begin{definition}{\Stop\,\,Metrics}{metrics}
+            
+            Let \(X\neq\emptyset\) be a set; a metric on \(X\) is a function \(d:X\times X\to\mathbb{R}\) such that for all \(x,y,z\in X\),
+            \begin{enumerate}
+                \item[(M1)] \(d(x,y)\geq0\),
+                \item[(M2)] \(d(x,y)=0\iff x=y\),
+                \item[(M3)] \(d(x,y)=d(y,x)\), and
+                \item[(M4)] \(d(x,y)\leq d(x,z)+d(z,y)\).
+            \end{enumerate}
+
+        \end{definition}
+        \begin{definition}{\Stop\,\,Metric Spaces}{metricspaces}
+            Given a metric \(d\) on a set \(X\neq\emptyset\), we call \((X,d)\) a metric space.
+        \end{definition}
+        \begin{remark*}
+            Given any norm \(||\cdot||:V\to\mathbb{F}\) on a normed space \(V\), the function \(d\) with \((x,y)\mapsto ||x-y||\) is a metric.
+        \end{remark*}
+        \pagebreak
+        \vphantom
+        \\
+        \\
+        We now introduce metric embeddings.
+        \begin{definition}{\Stop\,\,Metric Embeddings and Distortion}{metricembeddings}
+            Let \((X,d_X)\) and \((Y,d_Y)\) be metric spaces. An injective function \(f:X\to Y\) is called a metric embedding. The distortion of \(f\) is 
+            \begin{equation*}
+                \inf_{d\geq 1}\{\exists r>0:\forall x,y\in X, rd_X(x,y)\leq d_Y(f(x),f(y))\leq drd_X(x,y)\}.
+            \end{equation*}
+        \end{definition}

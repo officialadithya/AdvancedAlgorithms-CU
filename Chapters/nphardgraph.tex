@@ -446,7 +446,7 @@
                 \Procedure{GraphSemicoloring}{$G$} 
                     \State Solve, for \(\vec{v}_1,\ldots,\vec{v}_n\),
                     \begin{align*}
-                        \min\,&\lambda \tag{\(\star\)}\\
+                        \min\,&\lambda \\
                         \textsf{s.t. }&\iprod{\vec{v}_i}{\vec{v}_j}\leq\lambda\quad \forall (i,j)\in E, \\
                         &\iprod{\vec{v}_i}{\vec{v}_i}=1 \quad \forall i\in\{1,\ldots,n\}, \\
                         &\vec{v}_i\in\mathbb{R}^n \quad \forall i\in\{1,\ldots,n\}.
@@ -472,6 +472,39 @@
                     &=\left(1-\frac{2}{3}\right)^t \\
                     &=\frac{1}{3^{\log_3\Delta+2}}=\frac{1}{9\Delta},
                 \end{align*}
+                as desired. Let \(X_{i,j}\) be \(1\) if \(\vec{v}_i\) and \(\vec{v}_j\) have the same color and \(0\) otherwise. Then,
+                \begin{align*}
+                    \mathbb{E}[\text{number of badly colored vertices}]&=\sum_{(i,j)\in E}\mathbb{E}[X_{i,j}] \\
+                    &=\sum_{(i,j)\in E} \Pr[X_{i,j}=1] \\
+                    &\leq \frac{|E|}{9\Delta}=\frac{m}{9\Delta}\leq \frac{n\Delta}{2}\frac{1}{9\Delta}=\frac{n}{18}.
+                \end{align*}
+                By Markov's inequality,
+                \begin{align*}
+                    \Pr\left[\sum_{(i,j)\in E} X_{i,j}\geq\frac{n}{4}\right]&\leq \frac{n}{18}\frac{4}{n} \\
+                    &=\frac{2}{9}<\frac{1}{4},
+                \end{align*}
                 as desired.
             \end{proof}
         \end{lemma*}
+        \vphantom
+        \\
+        \\
+        Note that if we use the bound \(\Delta\leq n\), we get a semicoloring with \(O\left(n^{\log_32}\right)\) colors and an admissible coloring with \(\tilde{O}\left(n^{\log_32}\right)\) colors. So, on a dense graph, we have no improvement; see Algorithm~\ref{alg:3color-relax-wigderson}, using \(O(\sqrt{n})\) colors. But using the same ideas as \cite{wigderson1983improving}, by coloring high-degree vertices and their neighborhoods, we do get a better algorithm. 
+        \begin{algorithm}[H] 
+            \begin{algorithmic}[1]
+                \Require \(G=(V,E)\) is \(3\)-Colorable.
+                \Procedure{3-Color-Relax-SDP}{$G$} 
+                    \While{\(\exists v\in V, \deg(v)\geq\sigma\) where \(v\) is not colored}
+                        \State Color \(v\) with a new color. \Comment{Observe that the neighborhood \(N(v)\) of \(v\) is \(2\)-colorable.}
+                        \State Color \(N(v)\) with two new colors.
+                    \EndWhile
+                    \State Use the SDP algorithm on the remaining graph with \(\Delta<\sigma\).
+                \EndProcedure 
+            \end{algorithmic}
+            \caption{Coloring in Polynomial Time with \(\tilde{O}\left(n^{1-\log_63}\right)\) Colors, \cite{karger1998approximategraph}}
+            \label{alg:3color-relax-sdp}
+        \end{algorithm}
+        \vphantom
+        \\
+        \\
+        In each iteration of the while loop, we use \(3\) colors and color \(\sigma\) vertices. So, for the high-degree vertices, we use \(\frac{n}{\sigma}\) colors. For the low-degree vertices, we use \(\tilde{O}\left(\sigma^{\log_32}\right)\) colors. Setting \(\frac{n}{\sigma}=\sigma^{\log_32}\) gives \(\sigma=n^{\log_63}\).
