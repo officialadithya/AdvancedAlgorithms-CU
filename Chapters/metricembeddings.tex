@@ -31,3 +31,214 @@
                 \inf_{d\geq 1}\{\exists r>0:\forall x,y\in X, rd_X(x,y)\leq d_Y(f(x),f(y))\leq drd_X(x,y)\}.
             \end{equation*}
         \end{definition}
+
+\pagebreak
+
+\section{Lecture 15: March 6, 2025}
+
+    \subsection{The Fast Johnson-Lindenstrauss Transform}
+
+        In this lemma, we revisit the famous lemma by Johnson-Lindenstrauss \cite{johnson1984extensions}, and then we explore an optimization due to \cite{ailon2009johnson}. We follow the exposition of \cite{harvey2014fjltlecture}.
+        \begin{theorem}{\Stop\,\,\cite{johnson1984extensions} Johnson-Lindenstrauss Lemma (JLT)}{johnsonlindenstrauss}
+            Let \(X\subseteq \mathbb{R}^d\) and \(n=|X|\) be finite. Let \(L\in \mathbb{R}^{t\times d}\) with \(t=O\left(\frac{\log(n)}{\epsilon^2}\right)\) and
+            \begin{equation*}
+                L_{i,j}=\frac{1}{\sqrt{t}}L_{i,j}', \quad L_{i,j}'\sim N(0,1).
+            \end{equation*}
+            Then, for all \(x,y\in X\),
+            \begin{equation*}
+                (1-\epsilon)||x-y||\leq||L(x-y)||\leq (1+\epsilon)||x-y||
+            \end{equation*}
+            with high probability.
+        \end{theorem}
+        \vphantom
+        \\
+        \\
+        Using the classical JLT, computing \(Lx\) for each \(x\in\mathbb{R}^d\) takes \(O(td)\) time; the fast Johnson-Lindenstrauss transform (FJLT) reduces the computational cost to roughly \(d\log d\) time. Consider the following theorem.
+        \begin{theorem}{\Stop\,\,\cite{ailon2009johnson} The Fast Johnson-Lindenstrauss Transform (FJLT)}{fastjohnsonlindenstrauss}
+            Let \(\epsilon,\delta\in(0,1)\). There exists \(L\in\mathbb{R}^{t\times d}\) where \(t=O\left(\frac{1}{\epsilon^2}\log\left(\frac{d}{\delta}\right)^2\log\left(\frac{1}{\delta}\right)\right)\) such that for any \(x\in\mathbb{R}^d\), the Johnson-Lindenstrauss property holds with probability at least \(1-\delta\). Computing \(Lx\) takes \(O(d\log d+t)\) time.
+        \end{theorem}
+        \vphantom
+        \\
+        \\
+        As a first attempt, let \(S\in\mathbb{R}^{t\times d}\) with exactly one nonzero entry \(\sqrt{\frac{d}{t}}\) per row in a uniformly random position. Then, for \(x\in\mathbb{R}^d\), 
+        \begin{align*}
+            \mathbb{E}[(Sx)_i^2]&=\mathbb{E}[\iprod{S_{i,\bullet}}{x}] \\
+            &=\sum_{j=1}^d \frac{1}{d}\frac{d}{t}x_j^2=\frac{1}{t}||x||_2^2.
+        \end{align*}
+        So,
+        \begin{align*}
+            \mathbb{E}[||Sx||_2^2]&=\sum_{i=1}^t\mathbb{E}[(Sx)_i^2] \\
+            &=||x||_2^2.
+        \end{align*}
+        Unfortunately, the associated variance and success probability are poor in the worst case; i.e., if \(x\) has just one nonzero entry, we need \(t=\Omega(d)\) so that the map does not take \(x\) to \(0\) with constant probability. An idea is then to precondition \(x\) to ensure that no coordinate of \(x\) is too large.
+        \pagebreak
+        \vphantom
+        \\
+        \\
+        Consider the following definition.
+        \begin{definition}{\Stop\,\,Hadamard Matrix}{hadamardmatrix}
+            The Hadamard matrix \(H_d\in\mathbb{R}^{d\times d}\) for \(d\geq2\) a power of \(2\) is given by
+            \begin{equation*}
+                H_2=\frac{1}{\sqrt{2}}\begin{bmatrix}
+                    1 & 1 \\
+                    1 & -1
+                \end{bmatrix},\quad H_d=\frac{1}{\sqrt{2}}\begin{bmatrix}
+                    H_{\frac{d}{2}} & H_{\frac{d}{2}} \\
+                    H_{\frac{d}{2}} & -H_{\frac{d}{2}}
+                \end{bmatrix}.
+            \end{equation*}
+        \end{definition}
+        \begin{remark*}
+            Hadamard matrices have nice properties, including that
+            \begin{enumerate}
+                \item \(H_d\) is orthogonal, i.e., \(H_d^{-1}=H_d^\top\), and
+                \item computing \(H_dx\) for any \(x\in\mathbb{R}^d\) takes \(O(d\log d)\) time.
+            \end{enumerate}
+        \end{remark*}
+        \vphantom
+        \\
+        \\
+        Let \(D\in\mathbb{R}^{d\times d}\) be a diagonal matrix where each diagonal element is a uniformly random element of \(\{-1,1\}\); \(D^{-1}=D^\top\).
+        \\
+        \\
+        Our preconditioning step is to compute \(H_dDx\), note \(||H_dDx||_2=||x||_2\). Then, the FJLT matrix is \(L=SH_dD\) where \(S\) and \(D\) are random, but \(H_d\) is deterministic. First, we present Hoeffding's general inequality, and we then state and prove a useful lemma.
+        \begin{theorem}{\Stop\,\,Hoeffding's General Inequality}{hoeffdingineq}
+            Let \(X_1,\ldots,X_n\) be independent random variables where \(X_i\in[a_i,b_i]\). Let \(X=\sum_{i=1}^n X_i\). Then,
+            \begin{equation*}
+                \Pr\left[\left|\sum_{i=1}^n X_i-\mathbb{E}[X]\right|\geq s \right]\leq 2\exp\left(-\frac{2s^2}{\sum_{i=1}^n (b_i-a_i)^2}\right).
+            \end{equation*}
+        \end{theorem}
+        \begin{remark*}
+            Assuming \(||x||_2=1\), then \(||x||_\infty\) is maximized by \([1,0,\ldots,0]^\top\) and minimized by \(x=\frac{1}{\sqrt{d}}\ones\).
+        \end{remark*}
+        \begin{lemma*}
+            Assume, without loss of generality, that \(||x||_2=1\). Let \(y=H_dDx\). Then,
+            \begin{equation*}
+                \Pr\left[||y||_\infty\geq \sqrt{\frac{2\log(\frac{4d}{\delta})}{d}}\right]\leq\frac{\delta}{2}.
+            \end{equation*}
+            \begin{proof}
+                We will show, one coordinate at a time, that \(|(H_dDx)_i|\) is small, and then we will take a union bound. We have that
+                \begin{equation*}
+                    y_1=\sum_{j}D_{j,j}H_{d_{i,j}}x_j
+                \end{equation*}
+                Let \(X_j=D_{jj}H_{ij}x_j\). Then, \(\mathbb{E}[X_j]=0\) since \(D_{jj}\in\{-1,1\}\). Then,
+                \begin{equation*}
+                    X_j\in\frac{1}{\sqrt{d}}[-x_j,x_j].
+                \end{equation*}
+                So,
+                \begin{align*}
+                    \sum_{j=1}^d (b_j-a_j)^2&=\frac{4}{d}\sum_{j=1}^d x_j^2 \\
+                    &=\frac{4}{d}||x||_2^2=\frac{4}{d}.
+                \end{align*}
+                Now, we can use Hoeffding's inequality to see that
+                \begin{align*}
+                    \Pr[|y_1|\geq\lambda]=\Pr\left[\left|\sum_{i=1}^n X_i \right|\geq\lambda\right]&\leq 2\exp\left(-\frac{2\lambda^2}{\sum_{i=1}^d(b_i-a_i)^2}\right) \\
+                    &=2\exp\left(-\frac{\frac{4\log(\frac{4d}{\delta})}{d}}{\frac{4}{d}}\right) \\
+                    &=\frac{\delta}{2d}.
+                \end{align*}
+                The second line comes from taking \(\lambda=\sqrt{\frac{2\log\left(\frac{4d}{\delta}\right)}{d}}\), and \(\sum_{j=1}^d(b_j-a_j)^2=\frac{4}{d}\). Then, union bounding over all \(d\) coordinates \(y_i\), we get
+                \begin{equation*}
+                    \Pr[||y||_\infty\geq\lambda]\leq\frac{\delta}{2},
+                \end{equation*}
+                as desired.
+            \end{proof}
+        \end{lemma*}
+        \begin{lemma*}
+            Let \(y\in\mathbb{R}^d\) with \(||y||_2=1\) and \(||y||_\infty\leq\lambda\). Let \(S\) be the \(t\times d\) sparse sampling matrix. Then,
+            \begin{equation*}
+                \Pr[||Sy||_2^2\nin(1-\epsilon,1+\epsilon)]\leq\frac{\delta}{2}.
+            \end{equation*}
+            \begin{proof}[Proof (Sketch).]
+                Follows from Hoeffding's inequality using \((Sy)_1^2,\ldots,(Sy)_t^2\) with \(a_i=0\) and \(b_i=\frac{d}{t}\lambda^2\).
+            \end{proof}
+        \end{lemma*}
+        \vphantom
+        \\
+        \\
+        We are ready for the proof of Theorem~\ref{thm:fastjohnsonlindenstrauss}.
+        \begin{proof}[Proof (of Theorem~\ref{thm:fastjohnsonlindenstrauss}).]
+            Let \(x\in\mathbb{R}^d\) with \(||x||_2=1\). Let \(L=SHD\) and \(y=HDx\). Define
+            \begin{equation*}
+                E_1=\{||y||_\infty\geq\lambda\},\quad E_2=\{||Sy||_2^2\nin(1-\epsilon,1+\epsilon)\}.
+            \end{equation*}
+            Then,
+            \begin{align*}
+                \Pr[||Lx||_2^2\nin(1-\epsilon,1+\epsilon)]&=\Pr[E_2] \\
+                &=\Pr[E_1\cap E_2]+\Pr[\bar{E_1}\cap E_2] \\
+                &\leq \Pr[E_1]+\Pr[E_2|\bar{E_1}] \\
+                &\leq\frac{\delta}{2}+\frac{\delta}{2}=\delta.
+            \end{align*}
+            For the runtime analysis, the cost of computing \(Lx\) is \(O(d\log d)\).
+        \end{proof}
+
+\pagebreak
+
+\section{Lecture 16: March 11, 2025}
+
+    \subsection{Embedding Finite Metric Spaces Into \(\ell_p^n\)}
+
+        In this section, we follow the exposition of \cite{}. Consider the following theorem.
+        \begin{theorem}{\Stop\,\,Isometric Embedding into \(\ell_\infty^n\)}{isometricembeddinglinfty}
+            There exists an isometric embedding \(f\) of any metric space \((X,d)\) with \(n=|X|\) into \(\ell_\infty^n\).
+            \begin{proof}
+                Let \(X=\{x_1,\ldots,x_n\}\). Then, define \(f:X\to\mathbb{R}^n\) with
+                \begin{equation*}
+                    x_i\mapsto (d(x_1,x_i),\ldots,d(x_n,x_i)).
+                \end{equation*}
+                We wish to show \(||f(x_i)-f(x_j)||_\infty=d(x_i,x_j)\) for all \(x_i,x_j\in X\). We have
+                \begin{align*}
+                    ||f(x_i)-f(x_j)||_\infty&=\max_k|d(x_i,x_k)-d(x_k,x_j)|\leq d(x_i,x_j),
+                \end{align*}
+                where the last inequality is due to the triangle inequality. Then, for the other direction,
+                \begin{equation*}
+                    ||f(x_i)-f(x_j)||_\infty\geq |d(x_i,x_j)-d(x_j,x_j)|=d(x_i,x_j),
+                \end{equation*}
+                as desired.
+            \end{proof}
+        \end{theorem}
+        \begin{theorem}{\Stop\,\,\cite{bourgain1985lipschitz} Bourgain's Theorem}{bourganthm85}
+            For any finite metric space \((X,d)\) with \(n=|X|\) and for any \(p\),
+            \begin{equation*}
+                (X,d)\hookrightarrow_{O(\log n)}\ell_p^{O(\log^2n)}.
+            \end{equation*}
+            The embedding is computable by an efficient randomized algorithm.
+        \end{theorem}
+        \begin{theorem}{\Stop\,\,\cite{matousek1996distortion} Matou\v{s}ek's Theorem}{matousekthm96}
+            For any finite metric space \((X,d)\) with \(n=|X|\),
+            \begin{equation*}
+                (X,d)\hookrightarrow_D \ell_\infty^{O(Dn^{\frac{2}{d}\log n})}
+            \end{equation*}
+            with distrortion \(D\in 2\mathbb{Z}\) via an efficient randomized algorithm.
+        \end{theorem}
+        \pagebreak
+        \begin{corollary}{\Stop\,\,Matou\v{s}ek's Corollaries}{matousekcors}
+            Taking \(D=O(\log n)\), 
+            \begin{equation*}
+                (X,d)\hookrightarrow_{O(\log n)}\ell_\infty^{O(\log^2n)}.
+            \end{equation*}
+            Similarly, for any \(1\leq p\leq\infty\),
+            \begin{equation*}
+                (X,d)\hookrightarrow_{O\left(\log^{\frac{2}{p}+1}n\right)}\ell_p^{O(\log^2n)}.
+            \end{equation*}
+            The second result follows by using the identity mapping \(\id:\ell_\infty^{O(\log^2n)}\to\ell_p^{O(\log^2n)}\). For \(x\in\mathbb{R}^m\) with \(m=O(\log^2n)\),
+            \begin{equation*}
+                ||x||_\infty\leq||x||_p\leq m^\frac{1}{p}||x||_\infty.
+            \end{equation*} 
+        \end{corollary}
+        \vphantom
+        \\
+        \\
+        Consider the following definition.
+        \begin{definition}{\Stop\,\,Subset/Fr\'echet Embeddings}{frechetembeddings}
+            Given a finite matric space \((X,d)\) with \(n=|X|\), a Fr\'echet embedding is a function \(f:X\to\mathbb{R}^m\) where
+            \begin{equation*}
+                x\mapsto\bigoplus_{i=1}^m \beta_i f_i(x)=(\beta_1 f_1(x),\ldots,\beta_m f_m(x))
+            \end{equation*}
+            where \(f_i(x)=d(x,S_i)=\inf_{s_i\in S_i}d(x,s_i)\) where \(S_1,\ldots,S_m\subseteq X\) and \(\beta_1,\ldots,\beta_m\in\mathbb{R}\). Note \(m\) is a parameter.
+        \end{definition}
+        \begin{lemma*}
+            Let \(f\) be a Fr\'echet embedding with \(\beta_1=\cdots=\beta_m=1\). Then for all \(x,y\in X\), \(||f(x)-f(x)||_\infty\leq d(x,y)\).
+            \begin{proof}
+                Let \(S\subseteq X\), and let \(x,y\in X\). Without loss of generality, suppose \(d(x,S)\geq d(y,S)\). Let \(z\) be the closest point in \(S\) to \(y\). Then, \(|d(x,S)-d(y,S)|=d(x,S)-d(y,S)\leq d(x,z)-d(y,z)\leq d(x,y)\).
+            \end{proof}
+        \end{lemma*}
