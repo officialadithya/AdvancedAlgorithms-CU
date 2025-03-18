@@ -1,0 +1,66 @@
+\section{Lecture 18: March 18, 2025}
+
+    \subsection{Public Key Cryptography \& RSA}
+
+        Suppose we have two parties, ``Alice'' and ``Bob,'' who both wish to communicate securely, even if they've never met or exchanged information before.
+        \begin{definition}{\Stop\,\,Public Key Cryptosystems}{publickeycryptosystems}
+            A public key cryptosystem with security parameter \(n\) is specified by three algorithms:
+            \begin{enumerate}
+                \item \(\Gen(1^n)\), a randomized algorithm which outputs a secret key \(\sk\) and a public key \(\pk\),
+                \item \(\Enc_{\pk}:\mathcal{M}\to\mathcal{C}\), taking as input a message \(m\) and outputting a ciphertext \(c\), and 
+                \item \(\Dec_{\sk}:\mathcal{C}\to\mathcal{M}\), taking as input a ciphertext \(c\) and outputting a message \(m\).
+            \end{enumerate}
+        \end{definition}
+        \vphantom
+        \\
+        \\
+        We have the following desiderata for public key cryptosystems; correctness (C), efficiency (E), and security (S). Note that correctness and efficiency are rather straightforward to formalize, but security is more nuanced. 
+        \begin{enumerate}
+            \item[(C)] for all \(m\in\mathcal{M}\), \(\Dec_{\sk}\circ \Enc_{\pk}=\id_{\mathcal{M}}\),
+            \item[(E)] \(\Gen\), \(\Enc_{\pk}\), and \(\Dec_{\sk}\) should be computable in polynomial time in the security parameter \(n\), and 
+            \item[(S)] our adversary must only be able to learn anything about \(m\) with probability at most \(2^{-\Omega(n)}\).
+        \end{enumerate}
+        \pagebreak
+        \vphantom
+        \\
+        \\
+        We now turn to the famous RSA cryptosystem \cite{rivest1978rsa}. Recall that \(\mathbb{Z}_m\) is the ring of integers modulo \(m\), \(\mathbb{Z}_n^*\) is the multiplicative group of units modulo~\(n\), i.e., \(\mathbb{Z}_m^*=\{x\in\mathbb{Z}_m:\gcd(x,m)=1\}\), and \(\varphi\) is Euler's totient function. Note that \(\varphi(m)=|\mathbb{Z}_m^*|\) is the number of positive integers less than \(m\) that are relatively prime to \(m\).
+        \begin{theorem}{\Stop\,\,Euler's Theorem}{eulersthn}
+            For every \(a\in\mathbb{Z}_m^*\),
+            \begin{equation*}
+                a^{\varphi(m)}\equiv 1\pmod{N}.
+            \end{equation*}
+            \begin{proof}
+                We use Lagrange's Theorem; see \cite{dummit2004abstract} for a group-theoretic review. Consider \(\langle a\rangle\), a cyclic subgroup of \(\mathbb{Z}_n^*\). By Lagrange's Theorem, \(|\langle a\rangle|\) divides \(\varphi(m)\). Let \(k=|\langle a\rangle|\). Then, \(a^{\varphi(m)}=a^{k\ell}\equiv1^\ell=1\pmod{N}\) for some \(\ell\in\mathbb{Z}\).
+            \end{proof}
+        \end{theorem}
+        \vphantom
+        \\
+        \\
+        Now, as an instantiation of Definition~\ref{def:publickeycryptosystems}, we have that for RSA,
+        \begin{enumerate}
+            \item \(\Gen(1^n)\) outputs two random primes \(p\) and \(q\) each of size \(\frac{n}{2}\) bits and modulus \(N=pq\),  public exponent \(e\) invertible modulo \(\varphi(N)\), and a private exponent \(d\) such that \(de\equiv 1\pmod{\varphi(N)}\). Then, \(\pk=(e,N)\) and \(\sk=(d,p,q)\).
+            \item \(\Enc_{\pk}:\mathbb{Z}_N^*\to\mathbb:\mathbb{Z}_N^*\) is given by \(m\mapsto m^e\bmod N\).
+            \item \(\Dec_{\sk}:\mathbb{Z}_N^*\to\mathbb{Z}_N^*\) is given by \(c\mapsto c^d\bmod N\).
+        \end{enumerate}
+        \begin{lemma*}
+            The RSA cryptosystem satisfies correctness.
+            \begin{proof}
+                We have that
+                \begin{align*}
+                    \Dec_{\sk}(\Enc_{\pk}(m))&=\Dec_{\sk}(m^e\bmod N) \\
+                    &=m^{ed}\pmod{N} \\
+                    &=m^{a\varphi(N)+1}\pmod{N} \tag{\(\spadesuit\)} \\
+                    &=\left(m^{\varphi(N)}\right)^am\pmod{N} \\
+                    &=m\pmod{N}. \tag{\(\clubsuit\)}
+                \end{align*}
+                Note that \((\spadesuit)\) follows from \(e\) and \(d\) being multiplicative modulo \(N\) and \((\clubsuit)\) follows from Euler's Theorem.
+            \end{proof}
+        \end{lemma*}
+        \vphantom
+        \\
+        \\
+        For security, it is necessary, but not clearly sufficient, for the factoring problem to be hard; if it were easy, the adversary could efficiently recover \(d\) from \(e\) knowing \(p\) and \(q\) by computing the B\'ezout coefficients \(d\) and \(m\) such that \(de+a\varphi(N)=1\).
+        \\
+        \\
+        For efficiency, it takes \(O(a\log^2N)\) time to compute \(m^a\bmod N\) naively. But, if we use repeated squaring, we can improve to \(O(\log (a)\log^2(N))\) time. That is, we can compute \(m,\ldots,m^{2^i},\ldots,m^{2^{\lfloor \log a\rfloor}}\). Then, writing the binary representation of \(a\), we can multiply appopriate powers of \(m\) that we've already calculated. 
